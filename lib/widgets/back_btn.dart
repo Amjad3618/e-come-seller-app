@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
+
 
 class FancyBackButton extends StatefulWidget {
   final VoidCallback? onPressed;
   final Color primaryColor;
   final Color secondaryColor;
 
+  // ignore: use_super_parameters
   const FancyBackButton({
     Key? key,
     this.onPressed,
@@ -84,7 +84,7 @@ class _FancyBackButtonState extends State<FancyBackButton> with SingleTickerProv
                   if (widget.onPressed != null) {
                     widget.onPressed!();
                   } else {
-                   Get.back();
+                  Navigator.pop(context);
                   }
                 },
                 onTapCancel: () {

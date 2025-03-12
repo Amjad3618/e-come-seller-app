@@ -1,6 +1,8 @@
 
+
+import 'package:e_come_seller_1/Pages/home_page.dart';
+import 'package:e_come_seller_1/Pages/singup_page.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
 
 import '../utils/color.dart';
@@ -9,8 +11,7 @@ import '../widgets/email_form.dart';
 import '../widgets/fancy_text.dart';
 import '../widgets/fancybtn.dart';
 import '../widgets/password_form.dart';
-import 'forgor_password.dart';
-import 'singup_page.dart';
+
 
 class LoginPage extends StatelessWidget {
   const LoginPage({super.key});
@@ -114,7 +115,6 @@ class LoginPage extends StatelessWidget {
                       children: [
                         TextButton(
                           onPressed: () {
-                            Get.to(ForgotPasswordScreen());
                           },
                           style: TextButton.styleFrom(
                             foregroundColor: AppColors.primary,
@@ -147,8 +147,8 @@ class LoginPage extends StatelessWidget {
                         text: 'Login',
                         onPressed: () {
                           // Login logic
-                        //  Get.to(() => BottomNavScreen());
-                          // Get.to(SignUpPage());
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => const HomePage()));
+                        
                         },
                       ),
                     ),
@@ -238,7 +238,7 @@ class LoginPage extends StatelessWidget {
                           ),
                           TextButton(
                             onPressed: () {
-                              Get.to(const SignUpPage());
+                         Navigator.push(context, MaterialPageRoute(builder: (context) => const SignUpPage()));
                             },
                             style: TextButton.styleFrom(
                               foregroundColor: AppColors.primary,

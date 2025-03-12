@@ -1,6 +1,7 @@
-
+import 'package:e_come_seller_1/controllers/auth_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
+import 'package:provider/provider.dart';
 
 import '../utils/color.dart';
 import '../widgets/back_btn.dart';
@@ -10,21 +11,38 @@ import '../widgets/fancy_text.dart';
 import '../widgets/fancybtn.dart';
 import '../widgets/password_form.dart';
 
-class SignUpPage extends StatelessWidget {
+class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});
 
   @override
+  State<SignUpPage> createState() => _SignUpPageState();
+}
+
+class _SignUpPageState extends State<SignUpPage> {
+  final TextEditingController nameController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+  final TextEditingController confirmPasswordController = TextEditingController();
+  bool _agreedToTerms = false;
+  
+  @override
+  void dispose() {
+    nameController.dispose();
+    emailController.dispose();
+    passwordController.dispose();
+    confirmPasswordController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    TextEditingController nameController = TextEditingController();
-    TextEditingController emailController = TextEditingController();
-    TextEditingController passwordController = TextEditingController();
-    TextEditingController confirmPasswordController = TextEditingController();
+    final authProvider = Provider.of<AuthController>(context);
     
     return Scaffold(
-       appBar: AppBar(
-          leading: const FancyBackButton(),
-          backgroundColor: Colors.transparent
-        ),
+      appBar: AppBar(
+        leading: const FancyBackButton(),
+        backgroundColor: Colors.transparent
+      ),
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
@@ -65,7 +83,7 @@ class SignUpPage extends StatelessWidget {
                   // Title
                   const CustomText(
                     text: 'Create Account',
-                     color: AppColors.textPrimary,
+                    color: AppColors.textPrimary,
                     fontSize: 28,
                     fontWeight: FontWeight.bold,
                   ),
@@ -140,8 +158,7 @@ class SignUpPage extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(horizontal: 8.0),
                       child: PasswordTextField(
                         controller: confirmPasswordController,
-                        // labelText: "Confirm Password",
-                        
+                    
                       ),
                     ),
                   ),
@@ -154,9 +171,33 @@ class SignUpPage extends StatelessWidget {
                       borderRadius: BorderRadius.circular(8),
                       color: AppColors.scaffold.withOpacity(0.3),
                     ),
-                    child: const _TermsAndConditions(),
+                    child: _buildTermsAndConditions(),
                   ),
                   const SizedBox(height: 32),
+                  
+                  // Display error message if any
+                  if (authProvider.error != null)
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      margin: const EdgeInsets.only(bottom: 16),
+                      decoration: BoxDecoration(
+                        color: Colors.red.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: Colors.red.withOpacity(0.5)),
+                      ),
+                      child: Row(
+                        children: [
+                          const Icon(Icons.error_outline, color: Colors.red),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              authProvider.error!,
+                              style: const TextStyle(color: Colors.red),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   
                   // SignUp button with improved style
                   Container(
@@ -171,30 +212,48 @@ class SignUpPage extends StatelessWidget {
                         ),
                       ],
                     ),
-                    child: FancyButton(
-                      text: 'Sign Up',
-                      onPressed: () {
-                        // Validate and process signup
-                        if (nameController.text.isEmpty ||
-                            emailController.text.isEmpty ||
-                            passwordController.text.isEmpty ||
-                            confirmPasswordController.text.isEmpty) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Please fill all fields')),
+                    child: authProvider.isLoading
+                      ? const Center(
+                          child: CircularProgressIndicator(),
+                        )
+                      : FancyButton(
+                        text: 'Sign Up',
+                        onPressed: () async {
+                          // Validate inputs
+                          if (!_validateInputs(context)) {
+                            return;
+                          }
+                          
+                          // Check terms agreement
+                          if (!_agreedToTerms) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Please agree to terms and conditions'),
+                                backgroundColor: Colors.red,
+                              ),
+                            );
+                            return;
+                          }
+                          
+                          // Proceed with signup
+                          final success = await authProvider.registerUser(
+                            name: nameController.text.trim(),
+                            email: emailController.text.trim(),
+                            password: passwordController.text,
                           );
-                          return;
-                        }
-                        
-                        if (passwordController.text != confirmPasswordController.text) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Passwords do not match')),
-                          );
-                          return;
-                        }
-                        
-                        // Proceed with signup
-                      },
-                    ),
+                          
+                          if (success && mounted) {
+                            // Navigate to home page or show success message
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Registration successful!'),
+                                backgroundColor: Colors.green,
+                              ),
+                            );
+                            // Navigation will be handled by the listener in main.dart
+                          }
+                        },
+                      ),
                   ),
                   const SizedBox(height: 20),
                   
@@ -209,7 +268,7 @@ class SignUpPage extends StatelessWidget {
                         child: CustomText(
                           text: 'Or sign up with',
                           fontSize: 16,
- color: AppColors.textPrimary,                          
+                          color: AppColors.textPrimary,
                         ),
                       ),
                       const Expanded(
@@ -238,7 +297,9 @@ class SignUpPage extends StatelessWidget {
                           ),
                           child: CircularImageButton(
                             imagePath: 'assets/images/google.png',
-                            onPressed: () {},
+                            onPressed: () {
+                              // Implement Google sign up
+                            },
                           ),
                         ),
                         const SizedBox(width: 40),
@@ -256,7 +317,9 @@ class SignUpPage extends StatelessWidget {
                           ),
                           child: CircularImageButton(
                             imagePath: 'assets/images/facebook.png',
-                            onPressed: () {},
+                            onPressed: () {
+                              // Implement Facebook sign up
+                            },
                           ),
                         ),
                       ],
@@ -306,21 +369,9 @@ class SignUpPage extends StatelessWidget {
       ),
     );
   }
-}
 
-// Terms and conditions checkbox
-class _TermsAndConditions extends StatefulWidget {
-  const _TermsAndConditions();
-
-  @override
-  State<_TermsAndConditions> createState() => _TermsAndConditionsState();
-}
-
-class _TermsAndConditionsState extends State<_TermsAndConditions> {
-  bool _agreedToTerms = false;
-
-  @override
-  Widget build(BuildContext context) {
+  // Terms and conditions checkbox
+  Widget _buildTermsAndConditions() {
     return Row(
       children: [
         Theme(
@@ -380,5 +431,58 @@ class _TermsAndConditionsState extends State<_TermsAndConditions> {
         ),
       ],
     );
+  }
+
+  // Validate all inputs
+  bool _validateInputs(BuildContext context) {
+    // Check for empty fields
+    if (nameController.text.isEmpty ||
+        emailController.text.isEmpty ||
+        passwordController.text.isEmpty ||
+        confirmPasswordController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please fill all fields'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return false;
+    }
+    
+    // Validate email format using regex
+    final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+    if (!emailRegex.hasMatch(emailController.text.trim())) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please enter a valid email address'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return false;
+    }
+    
+    // Check password length
+    if (passwordController.text.length < 6) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Password must be at least 6 characters'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return false;
+    }
+    
+    // Check if passwords match
+    if (passwordController.text != confirmPasswordController.text) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Passwords do not match'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return false;
+    }
+    
+    return true;
   }
 }

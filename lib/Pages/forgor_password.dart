@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
+
 import '../utils/color.dart';
 import '../widgets/email_form.dart';
 import '../widgets/fancybtn.dart';
@@ -76,7 +75,7 @@ class ForgotPasswordScreen extends StatelessWidget {
                   // Simulate API call with delay
                   Future.delayed(const Duration(seconds: 2), () {
                     // Close loading dialog
-                   Get.back();
+                 Navigator.pop(context);
                     
                     // Show success dialog
                     showDialog(
