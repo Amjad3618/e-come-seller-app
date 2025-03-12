@@ -36,6 +36,7 @@ class _SignUpPageState extends State<SignUpPage> {
 
   @override
   Widget build(BuildContext context) {
+    // Get the AuthController instance using Provider
     final authProvider = Provider.of<AuthController>(context);
     
     return Scaffold(
@@ -158,7 +159,7 @@ class _SignUpPageState extends State<SignUpPage> {
                       padding: const EdgeInsets.symmetric(horizontal: 8.0),
                       child: PasswordTextField(
                         controller: confirmPasswordController,
-                    
+                       
                       ),
                     ),
                   ),
@@ -218,41 +219,7 @@ class _SignUpPageState extends State<SignUpPage> {
                         )
                       : FancyButton(
                         text: 'Sign Up',
-                        onPressed: () async {
-                          // Validate inputs
-                          if (!_validateInputs(context)) {
-                            return;
-                          }
-                          
-                          // Check terms agreement
-                          if (!_agreedToTerms) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Please agree to terms and conditions'),
-                                backgroundColor: Colors.red,
-                              ),
-                            );
-                            return;
-                          }
-                          
-                          // Proceed with signup
-                          final success = await authProvider.registerUser(
-                            name: nameController.text.trim(),
-                            email: emailController.text.trim(),
-                            password: passwordController.text,
-                          );
-                          
-                          if (success && mounted) {
-                            // Navigate to home page or show success message
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Registration successful!'),
-                                backgroundColor: Colors.green,
-                              ),
-                            );
-                            // Navigation will be handled by the listener in main.dart
-                          }
-                        },
+                        onPressed: () => _handleSignUp(authProvider, context),
                       ),
                   ),
                   const SizedBox(height: 20),
@@ -299,6 +266,7 @@ class _SignUpPageState extends State<SignUpPage> {
                             imagePath: 'assets/images/google.png',
                             onPressed: () {
                               // Implement Google sign up
+                              _handleSocialSignUp('google', context);
                             },
                           ),
                         ),
@@ -319,6 +287,7 @@ class _SignUpPageState extends State<SignUpPage> {
                             imagePath: 'assets/images/facebook.png',
                             onPressed: () {
                               // Implement Facebook sign up
+                              _handleSocialSignUp('facebook', context);
                             },
                           ),
                         ),
@@ -411,11 +380,10 @@ class _SignUpPageState extends State<SignUpPage> {
                     color: AppColors.primary,
                     fontWeight: FontWeight.bold,
                   ),
-                  // Use TapGestureRecognizer here if you want to make this clickable
                 ),
                 const TextSpan(
                   text: ' and ',
-                  style: TextStyle(color: Colors.white),
+                  style: TextStyle(color: AppColors.textPrimary),
                 ),
                 TextSpan(
                   text: 'Privacy Policy',
@@ -423,7 +391,6 @@ class _SignUpPageState extends State<SignUpPage> {
                     color: AppColors.primary,
                     fontWeight: FontWeight.bold,
                   ),
-                  // Use TapGestureRecognizer here if you want to make this clickable
                 ),
               ],
             ),
@@ -431,6 +398,60 @@ class _SignUpPageState extends State<SignUpPage> {
         ),
       ],
     );
+  }
+
+  // Handle main signup process
+  Future<void> _handleSignUp(AuthController authProvider, BuildContext context) async {
+    // Validate inputs
+    if (!_validateInputs(context)) {
+      return;
+    }
+    
+    // Check terms agreement
+    if (!_agreedToTerms) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please agree to terms and conditions'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+    
+    // Proceed with signup using AuthController
+    final success = await authProvider.registerUser(
+      name: nameController.text.trim(),
+      email: emailController.text.trim(),
+      password: passwordController.text,
+    );
+    
+    if (success && mounted) {
+      // Show success message
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Registration successful!'),
+          backgroundColor: Colors.green,
+        ),
+      );
+      
+      // Navigation will be handled by the listener in main.dart
+      // For example: Navigator.pushReplacementNamed(context, '/home');
+    }
+  }
+  
+  // Handle social media signup
+  void _handleSocialSignUp(String provider, BuildContext context) {
+    // Show a message that social login is not yet implemented
+    // This would be replaced with actual social auth logic
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('$provider login will be implemented soon!'),
+        backgroundColor: Colors.blue,
+      ),
+    );
+    
+    // Future implementation would call methods in AuthController:
+    // For example: authProvider.signInWithGoogle();
   }
 
   // Validate all inputs

@@ -1,13 +1,22 @@
 import 'package:e_come_seller_1/Pages/login_page.dart';
-import 'package:e_come_seller_1/controllers/auth_controller.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 // Import your AuthProvider
+import 'controllers/auth_controller.dart';
 import 'utils/color.dart';
 
-void main() {
-  runApp(const MyApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+  runApp( MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => AuthController()),
+        // Other providers...
+      ],
+      child: MyApp(),
+    ),);
 }
 
 class MyApp extends StatelessWidget {

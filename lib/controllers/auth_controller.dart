@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'dart:async';
+import 'dart:math'; // Added for random string generation
 
 import '../models/user_model.dart';
 
@@ -65,6 +66,18 @@ class AuthController extends ChangeNotifier {
     }
   }
   
+  // Helper: Generate a random UID
+  String _generateRandomUID() {
+    const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+    final random = Random();
+    return String.fromCharCodes(
+      Iterable.generate(
+        20, // Length of the random UID
+        (_) => chars.codeUnitAt(random.nextInt(chars.length)),
+      ),
+    );
+  }
+  
   // Register new user
   Future<bool> registerUser({
     required String name,
@@ -81,15 +94,16 @@ class AuthController extends ChangeNotifier {
         password: password,
       );
       
-      // 2. Get next available user ID
-      int nextId = await _getNextUserId();
+      // 2. Generate a random custom UID
+      String customUID = _generateRandomUID();
       
       // 3. Create user model
       _currentUser = UserModel(
         name: name,
-        id: nextId,
+        uid: customUID, // Use the random UID instead of sequential ID
         email: email,
-        password: '', // Don't store actual password in Firestore for security
+        password: '',
+        confirmpassword: '', // Don't store actual password in Firestore for security
       );
       
       // 4. Store in Firestore using auth UID as doc ID
@@ -290,27 +304,6 @@ class AuthController extends ChangeNotifier {
       _setError('Account deletion failed: $e');
       _setLoading(false);
       return false;
-    }
-  }
-
-  // Helper: Get next available user ID
-  Future<int> _getNextUserId() async {
-    try {
-      QuerySnapshot snapshot = await _firestore
-          .collection(_usersCollection)
-          .orderBy('id', descending: true)
-          .limit(1)
-          .get();
-      
-      if (snapshot.docs.isEmpty) {
-        return 1; // Start with ID 1 if no users exist
-      }
-      
-      Map<String, dynamic> data = snapshot.docs.first.data() as Map<String, dynamic>;
-      return (data['id'] as int) + 1;
-    } catch (e) {
-      print('Error getting next user ID: $e');
-      return DateTime.now().millisecondsSinceEpoch; // Fallback to timestamp
     }
   }
 

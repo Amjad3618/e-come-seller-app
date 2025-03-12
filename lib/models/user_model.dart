@@ -1,23 +1,27 @@
 class UserModel {
   String name;
-  int id;
+  String uid;
   String email;
   String password;
+   String confirmpassword;
+
 
   UserModel({
     required this.name,
-    required this.id,
+    required this.uid,
     required this.email,
     required this.password,
+    required this.confirmpassword
   });
 
   // Factory constructor to create an instance from JSON
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
       name: json['name'],
-      id: json['id'],
+      uid: json['uid'],
       email: json['email'],
       password: json['password'],
+      confirmpassword: json['confirmpassword']
     );
   }
 
@@ -25,9 +29,10 @@ class UserModel {
   Map<String, dynamic> toJson() {
     return {
       'name': name,
-      'id': id,
+      'uid': uid,
       'email': email,
       'password': password,
+    'confirmpassword': confirmpassword
     };
   }
 }
