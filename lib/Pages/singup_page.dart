@@ -1,3 +1,4 @@
+import 'package:e_come_seller_1/Pages/home_page.dart';
 import 'package:e_come_seller_1/controllers/auth_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
@@ -6,6 +7,7 @@ import 'package:provider/provider.dart';
 import '../utils/color.dart';
 import '../widgets/back_btn.dart';
 import '../widgets/custome_btn.dart';
+import '../widgets/custome_toast.dart';
 import '../widgets/email_form.dart';
 import '../widgets/fancy_text.dart';
 import '../widgets/fancybtn.dart';
@@ -409,16 +411,11 @@ class _SignUpPageState extends State<SignUpPage> {
     
     // Check terms agreement
     if (!_agreedToTerms) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please agree to terms and conditions'),
-          backgroundColor: Colors.red,
-        ),
-      );
+     CustomToast.showFailureToast(message: 'Please agree to the terms and conditions');
       return;
     }
     
-    // Proceed with signup using AuthController
+    // Proceed with sColor.fromARGB(255, 133, 122, 122)g AuthController
     final success = await authProvider.registerUser(
       name: nameController.text.trim(),
       email: emailController.text.trim(),
@@ -427,28 +424,25 @@ class _SignUpPageState extends State<SignUpPage> {
     
     if (success && mounted) {
       // Show success message
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Registration successful!'),
-          backgroundColor: Colors.green,
-        ),
-      );
+    
+          CustomToast.showSuccessToast(message: 'Account created successfully!');
+      
       
       // Navigation will be handled by the listener in main.dart
       // For example: Navigator.pushReplacementNamed(context, '/home');
     }
+     nameController.clear();
+    emailController.clear();
+    passwordController.clear();
+    confirmPasswordController.clear();
+    Navigator.push(context, MaterialPageRoute(builder: (_)=>HomePage()));
   }
   
   // Handle social media signup
   void _handleSocialSignUp(String provider, BuildContext context) {
     // Show a message that social login is not yet implemented
     // This would be replaced with actual social auth logic
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('$provider login will be implemented soon!'),
-        backgroundColor: Colors.blue,
-      ),
-    );
+  CustomToast.showFailureToast(message:  'Social login is not yet implemented');
     
     // Future implementation would call methods in AuthController:
     // For example: authProvider.signInWithGoogle();
@@ -461,46 +455,33 @@ class _SignUpPageState extends State<SignUpPage> {
         emailController.text.isEmpty ||
         passwordController.text.isEmpty ||
         confirmPasswordController.text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please fill all fields'),
-          backgroundColor: Colors.red,
-        ),
-      );
+    CustomToast.showSuccessToast(message:  'we will make this soon<>');
       return false;
     }
     
     // Validate email format using regex
     final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
     if (!emailRegex.hasMatch(emailController.text.trim())) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please enter a valid email address'),
-          backgroundColor: Colors.red,
-        ),
-      );
+     
+        CustomToast.showFailureToast(message: 'Please enter a valid email address');
+      
+     
+
       return false;
+      
     }
     
     // Check password length
     if (passwordController.text.length < 6) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Password must be at least 6 characters'),
-          backgroundColor: Colors.red,
-        ),
-      );
+      CustomToast.showFailureToast(message: 'Password must be at least 6 characters long');
       return false;
     }
     
     // Check if passwords match
     if (passwordController.text != confirmPasswordController.text) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Passwords do not match'),
-          backgroundColor: Colors.red,
-        ),
-      );
+      
+        CustomToast.showFailureToast(message: 'Passwords do not match');
+      
       return false;
     }
     

@@ -1,29 +1,43 @@
-
-
 import 'package:e_come_seller_1/Pages/home_page.dart';
 import 'package:e_come_seller_1/Pages/singup_page.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
+import 'package:provider/provider.dart';
 
+import '../controllers/auth_controller.dart';
 import '../utils/color.dart';
 import '../widgets/custome_btn.dart';
+import '../widgets/custome_toast.dart';
 import '../widgets/email_form.dart';
 import '../widgets/fancy_text.dart';
 import '../widgets/fancybtn.dart';
 import '../widgets/password_form.dart';
 
-
-class LoginPage extends StatelessWidget {
+class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
   @override
+  State<LoginPage> createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+  
+  @override
+  void dispose() {
+    emailController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
+  
+  @override
   Widget build(BuildContext context) {
-    TextEditingController emailController = TextEditingController();
-    TextEditingController passwordController = TextEditingController();
+    // Get the AuthController instance using Provider
+    final authProvider = Provider.of<AuthController>(context);
     
     return SafeArea(
       child: Scaffold(
-       
         body: Container(
           decoration: BoxDecoration(
             gradient: LinearGradient(
@@ -115,6 +129,7 @@ class LoginPage extends StatelessWidget {
                       children: [
                         TextButton(
                           onPressed: () {
+                            // Handle forgot password
                           },
                           style: TextButton.styleFrom(
                             foregroundColor: AppColors.primary,
@@ -130,6 +145,30 @@ class LoginPage extends StatelessWidget {
                     ),
                     const SizedBox(height: 30),
                     
+                    // Display error message if any
+                    if (authProvider.error != null)
+                      Container(
+                        padding: const EdgeInsets.all(8),
+                        margin: const EdgeInsets.only(bottom: 16),
+                        decoration: BoxDecoration(
+                          color: Colors.red.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(color: Colors.red.withOpacity(0.5)),
+                        ),
+                        child: Row(
+                          children: [
+                            const Icon(Icons.error_outline, color: Colors.red),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Text(
+                                authProvider.error!,
+                                style: const TextStyle(color: Colors.red),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    
                     // Login button with improved style
                     Container(
                       width: double.infinity,
@@ -143,14 +182,14 @@ class LoginPage extends StatelessWidget {
                           ),
                         ],
                       ),
-                      child: FancyButton(
-                        text: 'Login',
-                        onPressed: () {
-                          // Login logic
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => const HomePage()));
-                        
-                        },
-                      ),
+                      child: authProvider.isLoading
+                        ? const Center(
+                            child: CircularProgressIndicator(),
+                          )
+                        : FancyButton(
+                          text: 'Login',
+                          onPressed: () => _handleLogin(authProvider, context),
+                        ),
                     ),
                     
                     const SizedBox(height: 24),
@@ -195,11 +234,11 @@ class LoginPage extends StatelessWidget {
                             ),
                             child: CircularImageButton(
                               imagePath: 'assets/images/google.png',
-                              onPressed: () {},
+                              onPressed: () => _handleSocialLogin('google', context),
                             ),
                           ),
                           const SizedBox(width: 40),
-                          // Apple
+                          // Facebook
                           Container(
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
@@ -213,7 +252,7 @@ class LoginPage extends StatelessWidget {
                             ),
                             child: CircularImageButton(
                               imagePath: 'assets/images/facebook.png',
-                              onPressed: () {},
+                              onPressed: () => _handleSocialLogin('facebook', context),
                             ),
                           ),
                         ],
@@ -238,7 +277,7 @@ class LoginPage extends StatelessWidget {
                           ),
                           TextButton(
                             onPressed: () {
-                         Navigator.push(context, MaterialPageRoute(builder: (context) => const SignUpPage()));
+                              Navigator.push(context, MaterialPageRoute(builder: (context) => const SignUpPage()));
                             },
                             style: TextButton.styleFrom(
                               foregroundColor: AppColors.primary,
@@ -253,7 +292,6 @@ class LoginPage extends StatelessWidget {
                         ],
                       ),
                     ),
-                  
                   ],
                 ),
               ),
@@ -262,5 +300,67 @@ class LoginPage extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  // Handle login process
+  Future<void> _handleLogin(AuthController authProvider, BuildContext context) async {
+    // Validate inputs
+    if (!_validateInputs(context)) {
+      return;
+    }
+    
+    // Proceed with login using AuthController
+    final success = await authProvider.loginUser(
+      email: emailController.text.trim(),
+      password: passwordController.text,
+    );
+    
+    if (success && mounted) {
+      // Show success message
+      CustomToast.showSuccessToast(message: 'Login successful!');
+      
+      // Clear text fields
+      emailController.clear();
+      passwordController.clear();
+      
+      // Navigate to home page
+      Navigator.pushReplacement(
+        context, 
+        MaterialPageRoute(builder: (context) => const HomePage())
+      );
+    }
+  }
+  
+  // Handle social media login
+  void _handleSocialLogin(String provider, BuildContext context) {
+    // Show a message that social login is not yet implemented
+    CustomToast.showFailureToast(message: 'Social login is not yet implemented');
+    
+    // Future implementation would call methods in AuthController:
+    // For example: authProvider.signInWithGoogle();
+  }
+
+  // Validate all inputs
+  bool _validateInputs(BuildContext context) {
+    // Check for empty fields
+    if (emailController.text.isEmpty || passwordController.text.isEmpty) {
+      CustomToast.showFailureToast(message: 'Please fill in all fields');
+      return false;
+    }
+    
+    // Validate email format using regex
+    final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+    if (!emailRegex.hasMatch(emailController.text.trim())) {
+      CustomToast.showFailureToast(message: 'Please enter a valid email address');
+      return false;
+    }
+    
+    // Check password length
+    if (passwordController.text.length < 6) {
+      CustomToast.showFailureToast(message: 'Password must be at least 6 characters long');
+      return false;
+    }
+    
+    return true;
   }
 }

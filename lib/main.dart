@@ -1,10 +1,11 @@
+import 'package:e_come_seller_1/Pages/categorie_page.dart';
 import 'package:e_come_seller_1/Pages/login_page.dart';
+import 'package:e_come_seller_1/provider/admin_provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 // Import your AuthProvider
-import 'controllers/auth_controller.dart';
 import 'utils/color.dart';
 
 void main() async {
@@ -12,7 +13,7 @@ void main() async {
   await Firebase.initializeApp();
   runApp( MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => AuthController()),
+        ChangeNotifierProvider(create: (_) => AdminProvider()),
         // Other providers...
       ],
       child: MyApp(),
@@ -27,7 +28,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => AuthController()),
+        ChangeNotifierProvider(create: (_) => AdminProvider()),
         // Add other providers as needed
       ],
       child: MaterialApp(
@@ -46,6 +47,10 @@ class MyApp extends StatelessWidget {
           ),
         ),
         home: LoginPage(),
+        routes: {
+          // Add your routes here
+          "/": (context) => CategoriePage(),
+        },
       ),
     );
   }

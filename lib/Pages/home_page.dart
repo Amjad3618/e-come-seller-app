@@ -182,10 +182,14 @@ class _HomePageState extends State<HomePage> {
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
                         ElevatedButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            Navigator.pushNamed(context, '/CategoriesPage');
+                          },
                           child: Text("Categories"),
                         ),
-                        ElevatedButton(onPressed: () {}, child: Text("coupon")),
+                        ElevatedButton(onPressed: () {
+                          
+                        }, child: Text("coupon")),
                       ],
                     ),
                   ],
