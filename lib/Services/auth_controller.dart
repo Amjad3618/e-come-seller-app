@@ -350,4 +350,8 @@ class AuthController extends ChangeNotifier {
     _error = null;
     notifyListeners();
   }
+  
+  bool isUserLoggedIn() {
+    return _auth.currentUser != null;
+  }
 }

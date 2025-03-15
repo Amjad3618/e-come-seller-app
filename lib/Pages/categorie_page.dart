@@ -7,8 +7,8 @@ import '../models/categorie_model.dart';
 import '../utils/color.dart';
 import '../view_model.dart/category_view_model.dart';
 
-class CategoryScreen extends StatelessWidget {
-  const CategoryScreen({Key? key}) : super(key: key);
+class CategoryPage extends StatelessWidget {
+  const CategoryPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -249,8 +249,8 @@ class CategoryForm extends StatelessWidget {
               width: 100,
               height: 100,
               decoration: BoxDecoration(
-                border: Border.all(color: Colors.grey),
-                borderRadius: BorderRadius.circular(4),
+                border: Border.all(color: Colors.orange,width: 2),
+                borderRadius: BorderRadius.circular(15),
               ),
               child: Image.file(
                 viewModel.selectedImage!,
