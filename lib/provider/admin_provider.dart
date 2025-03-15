@@ -4,7 +4,7 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
-import '../controllers/db_services.dart';
+import '../Services/db_services.dart';
 
 class AdminProvider extends ChangeNotifier{
   List<QueryDocumentSnapshot> categories = [];

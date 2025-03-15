@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 
-import '../controllers/auth_controller.dart';
+import '../Services/auth_controller.dart';
 import '../utils/color.dart';
 import '../widgets/custome_btn.dart';
 import '../widgets/custome_toast.dart';
@@ -324,10 +324,8 @@ class _LoginPageState extends State<LoginPage> {
       passwordController.clear();
       
       // Navigate to home page
-      Navigator.pushReplacement(
-        context, 
-        MaterialPageRoute(builder: (context) => const HomePage())
-      );
+     
+       Navigator.pushNamed(context, '/HomePage');
     }
   }
   

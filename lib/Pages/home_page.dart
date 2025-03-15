@@ -16,6 +16,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: const Text('Admin Dashboard'),
         backgroundColor: Colors.blueGrey[800],
         foregroundColor: Colors.white,
@@ -183,7 +184,7 @@ class _HomePageState extends State<HomePage> {
                       children: [
                         ElevatedButton(
                           onPressed: () {
-                            Navigator.pushNamed(context, '/CategoriesPage');
+                            Navigator.pushNamed(context, '/CategoriePage');
                           },
                           child: Text("Categories"),
                         ),

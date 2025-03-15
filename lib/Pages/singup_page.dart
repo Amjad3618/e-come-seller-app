@@ -1,5 +1,5 @@
 import 'package:e_come_seller_1/Pages/home_page.dart';
-import 'package:e_come_seller_1/controllers/auth_controller.dart';
+import 'package:e_come_seller_1/Services/auth_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';

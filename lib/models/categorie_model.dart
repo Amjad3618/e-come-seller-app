@@ -1,33 +1,48 @@
+/// Model class for Category
 class CategorieModel {
-  String name;
-  int id;
-  String image;
-  int priority;
+  final String id;
+  final String name;
+  final String image;
+  final int priority;
 
   CategorieModel({
-    required this.name,
     required this.id,
+    required this.name,
     required this.image,
     required this.priority,
   });
 
-  // Factory constructor to create an instance from JSON
+  /// Create a CategoryModel from JSON
   factory CategorieModel.fromJson(Map<String, dynamic> json) {
     return CategorieModel(
-      name: json['name'],
-      id: json['id'],
-      image: json['image'],
-      priority: json['priority'],
+      id: json['id'] ?? '',
+      name: json['name'] ?? '',
+      image: json['image'] ?? '',
+      priority: json['priority'] ?? 0,
     );
   }
 
-  // Method to convert an instance to JSON
+  /// Convert CategoryModel to JSON
   Map<String, dynamic> toJson() {
     return {
       'name': name,
-      'id': id,
       'image': image,
       'priority': priority,
     };
+  }
+
+  /// Create a copy of CategoryModel with some changes
+  CategorieModel copyWith({
+    String? id,
+    String? name,
+    String? image,
+    int? priority,
+  }) {
+    return CategorieModel(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      image: image ?? this.image,
+      priority: priority ?? this.priority,
+    );
   }
 }

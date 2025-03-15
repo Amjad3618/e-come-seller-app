@@ -1,5 +1,7 @@
 import 'package:e_come_seller_1/Pages/categorie_page.dart';
+import 'package:e_come_seller_1/Pages/home_page.dart';
 import 'package:e_come_seller_1/Pages/login_page.dart';
+import 'package:e_come_seller_1/Services/auth_controller.dart';
 import 'package:e_come_seller_1/provider/admin_provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -7,6 +9,7 @@ import 'package:provider/provider.dart';
 
 // Import your AuthProvider
 import 'utils/color.dart';
+import 'view_model.dart/category_view_model.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -14,6 +17,7 @@ void main() async {
   runApp( MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => AdminProvider()),
+          ChangeNotifierProvider(create: (context) => CategoryViewModel()),
         // Other providers...
       ],
       child: MyApp(),
@@ -28,7 +32,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => AdminProvider()),
+         ChangeNotifierProvider(create: (_) => AuthController()),
         // Add other providers as needed
       ],
       child: MaterialApp(
@@ -49,7 +53,8 @@ class MyApp extends StatelessWidget {
         home: LoginPage(),
         routes: {
           // Add your routes here
-          "/": (context) => CategoriePage(),
+          "/CategoriePage": (context) => CategoryScreen(),
+             "/HomePage": (context) => HomePage(),
         },
       ),
     );
