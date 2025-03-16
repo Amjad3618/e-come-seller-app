@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 
-import '../Services/auth_controller.dart';
+import '../Services/auth_services.dart';
 import '../utils/color.dart';
 import '../widgets/custome_btn.dart';
 import '../widgets/custome_toast.dart';

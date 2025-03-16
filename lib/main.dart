@@ -1,6 +1,6 @@
 import 'package:e_come_seller_1/Pages/categorie_page.dart';
 import 'package:e_come_seller_1/Pages/home_page.dart';
-import 'package:e_come_seller_1/Services/auth_controller.dart';
+import 'package:e_come_seller_1/Services/auth_services.dart';
 import 'package:e_come_seller_1/provider/admin_provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
