@@ -9,6 +9,7 @@ class ProductsModel {
   String category;
   String id;
   int maxQuantity;
+  
 
   ProductsModel({
     required this.name,

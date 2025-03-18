@@ -1,7 +1,6 @@
 import 'package:e_come_seller_1/utils/color.dart';
 import 'package:flutter/material.dart';
 
-
 import '../widgets/fancy_text.dart';
 
 class HomePage extends StatefulWidget {
@@ -161,7 +160,9 @@ class _HomePageState extends State<HomePage> {
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
                         ElevatedButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            Navigator.pushNamed(context, '/ProductPage');
+                          },
                           child: Text("Products"),
                         ),
                         ElevatedButton(onPressed: () {}, child: Text("Order")),
@@ -188,9 +189,7 @@ class _HomePageState extends State<HomePage> {
                           },
                           child: Text("Categories"),
                         ),
-                        ElevatedButton(onPressed: () {
-                          
-                        }, child: Text("coupon")),
+                        ElevatedButton(onPressed: () {}, child: Text("coupon")),
                       ],
                     ),
                   ],
