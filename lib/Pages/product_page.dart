@@ -29,9 +29,9 @@ class _ProductPageContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final viewModel = Provider.of<ProductViewModel>(context);
-    
+
     return Scaffold(
-        resizeToAvoidBottomInset: true,
+      resizeToAvoidBottomInset: true,
       appBar: AppBar(
         title: const Text('Products'),
         backgroundColor: Colors.blueGrey[800],
@@ -45,9 +45,10 @@ class _ProductPageContent extends StatelessWidget {
           ),
         ],
       ),
-      body: viewModel.isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : _buildProductList(context, viewModel),
+      body:
+          viewModel.isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : _buildProductList(context, viewModel),
       floatingActionButton: FloatingActionButton(
         backgroundColor: AppColors.primary,
         onPressed: () => _showProductForm(context),
@@ -60,7 +61,7 @@ class _ProductPageContent extends StatelessWidget {
     if (viewModel.errorMessage != null) {
       return Center(child: Text(viewModel.errorMessage!));
     }
-    
+
     if (viewModel.products.isEmpty) {
       return const Center(child: Text('No products available'));
     }
@@ -80,7 +81,7 @@ class _ProductPageContent extends StatelessWidget {
 
   void _showProductForm(BuildContext context, {ProductsModel? product}) {
     final viewModel = Provider.of<ProductViewModel>(context, listen: false);
-    
+
     if (product != null) {
       viewModel.setFormData(product);
     } else {
@@ -98,37 +99,45 @@ class _ProductPageContent extends StatelessWidget {
 
     showDialog(
       context: context,
-      builder: (context) => Dialog(
-        child: Container(
-          width: MediaQuery.of(context).size.width * 0.8,
-          padding: const EdgeInsets.all(16),
-          child: ProductForm(existingProduct: product),
-        ),
-      ),
+      builder:
+          (context) => Dialog(
+            child: Container(
+              width: MediaQuery.of(context).size.width * 0.8,
+              padding: const EdgeInsets.all(16),
+              child: ProductForm(existingProduct: product),
+            ),
+          ),
     );
   }
 
   void _confirmDelete(BuildContext context, ProductsModel product) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Delete Product'),
-        content: Text('Are you sure you want to delete ${product.name}?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Cancel'),
+      builder:
+          (context) => AlertDialog(
+            title: const Text('Delete Product'),
+            content: Text('Are you sure you want to delete ${product.name}?'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text('Cancel'),
+              ),
+              TextButton(
+                onPressed: () {
+                  final viewModel = Provider.of<ProductViewModel>(
+                    context,
+                    listen: false,
+                  );
+                  viewModel.deleteProduct(product.id, product.images);
+                  Navigator.of(context).pop();
+                },
+                child: const Text(
+                  'Delete',
+                  style: TextStyle(color: Colors.red),
+                ),
+              ),
+            ],
           ),
-          TextButton(
-            onPressed: () {
-              final viewModel = Provider.of<ProductViewModel>(context, listen: false);
-              viewModel.deleteProduct(product.id, product.images);
-              Navigator.of(context).pop();
-            },
-            child: const Text('Delete', style: TextStyle(color: Colors.red)),
-          ),
-        ],
-      ),
     );
   }
 }
@@ -160,21 +169,23 @@ class ProductListItem extends StatelessWidget {
                 // Product image
                 ClipRRect(
                   borderRadius: BorderRadius.circular(8),
-                  child: product.images.isNotEmpty
-                      ? Image.network(
-                          product.images[0],
-                          width: 80,
-                          height: 80,
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) => 
-                              const Icon(Icons.broken_image, size: 80),
-                        )
-                      : Container(
-                          width: 80,
-                          height: 80,
-                          color: Colors.grey[300],
-                          child: const Icon(Icons.image_not_supported),
-                        ),
+                  child:
+                      product.images.isNotEmpty
+                          ? Image.network(
+                            product.images[0],
+                            width: 80,
+                            height: 80,
+                            fit: BoxFit.cover,
+                            errorBuilder:
+                                (context, error, stackTrace) =>
+                                    const Icon(Icons.broken_image, size: 80),
+                          )
+                          : Container(
+                            width: 80,
+                            height: 80,
+                            color: Colors.grey[300],
+                            child: const Icon(Icons.image_not_supported),
+                          ),
                 ),
                 const SizedBox(width: 12),
                 // Product details
@@ -194,16 +205,13 @@ class ProductListItem extends StatelessWidget {
                         product.description,
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          color: Colors.grey[600],
-                          fontSize: 14,
-                        ),
+                        style: TextStyle(color: Colors.grey[600], fontSize: 14),
                       ),
                       const SizedBox(height: 8),
                       Row(
                         children: [
                           Text(
-                            '₹${product.newprice}',
+                            'Rs${product.newprice}',
                             style: const TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 16,
@@ -213,7 +221,7 @@ class ProductListItem extends StatelessWidget {
                           const SizedBox(width: 8),
                           if (product.oldprice > 0)
                             Text(
-                              '₹${product.oldprice}',
+                              'Rs${product.oldprice}',
                               style: TextStyle(
                                 decoration: TextDecoration.lineThrough,
                                 color: Colors.grey[600],
@@ -247,10 +255,7 @@ class ProductListItem extends StatelessWidget {
               children: [
                 Text(
                   'Category: ${product.category}',
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.grey[700],
-                  ),
+                  style: TextStyle(fontSize: 14, color: Colors.grey[700]),
                 ),
                 Text(
                   'Stock: ${product.maxQuantity}',
@@ -284,8 +289,9 @@ class ProductListItem extends StatelessWidget {
                         child: Image.network(
                           product.images[index],
                           fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) => 
-                              const Icon(Icons.broken_image, size: 20),
+                          errorBuilder:
+                              (context, error, stackTrace) =>
+                                  const Icon(Icons.broken_image, size: 20),
                         ),
                       ),
                     );
@@ -298,11 +304,56 @@ class ProductListItem extends StatelessWidget {
     );
   }
 }
-
-class ProductForm extends StatelessWidget {
+class ProductForm extends StatefulWidget {
   final ProductsModel? existingProduct;
 
   const ProductForm({Key? key, this.existingProduct}) : super(key: key);
+
+  @override
+  State<ProductForm> createState() => _ProductFormState();
+}
+
+class _ProductFormState extends State<ProductForm> {
+  bool _isLoadingCategories = true;
+  List<String> _categories = [];
+  String? _selectedCategory;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchCategories();
+    
+    // Set selected category if editing existing product
+    if (widget.existingProduct != null) {
+      _selectedCategory = widget.existingProduct!.category;
+    }
+  }
+
+  Future<void> _fetchCategories() async {
+    try {
+      final viewModel = Provider.of<ProductViewModel>(context, listen: false);
+      final categories = await viewModel.fetchCategories();
+      
+      setState(() {
+        _categories = categories;
+        _isLoadingCategories = false;
+        
+        // If editing and the category exists, select it
+        if (widget.existingProduct != null && 
+            _categories.contains(widget.existingProduct!.category)) {
+          _selectedCategory = widget.existingProduct!.category;
+        } else if (_categories.isNotEmpty) {
+          // Default to first category if adding new product
+          _selectedCategory = _categories.first;
+        }
+      });
+    } catch (e) {
+      setState(() {
+        _isLoadingCategories = false;
+      });
+      // Handle error
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -317,7 +368,7 @@ class ProductForm extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text(
-              existingProduct == null ? 'Add New Product' : 'Edit Product',
+              widget.existingProduct == null ? 'Add New Product' : 'Edit Product',
               style: const TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
@@ -370,7 +421,7 @@ class ProductForm extends StatelessWidget {
                     decoration: const InputDecoration(
                       labelText: 'Original Price',
                       border: OutlineInputBorder(),
-                      prefixText: '₹',
+                      prefixText: 'Rs',
                     ),
                     keyboardType: TextInputType.number,
                     validator: (value) {
@@ -391,7 +442,7 @@ class ProductForm extends StatelessWidget {
                     decoration: const InputDecoration(
                       labelText: 'Sale Price',
                       border: OutlineInputBorder(),
-                      prefixText: '',
+                      prefixText: '₹',
                     ),
                     keyboardType: TextInputType.number,
                     validator: (value) {
@@ -410,20 +461,39 @@ class ProductForm extends StatelessWidget {
             const SizedBox(height: 16),
             Row(
               children: [
+                // Use DropdownButtonFormField for categories
                 Expanded(
-                  child: TextFormField(
-                    controller: viewModel.categoryController,
-                    decoration: const InputDecoration(
-                      labelText: 'Category',
-                      border: OutlineInputBorder(),
-                    ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter category';
-                      }
-                      return null;
-                    },
-                  ),
+                  child: _isLoadingCategories
+                      ? const Center(child: CircularProgressIndicator())
+                      : DropdownButtonFormField<String>(
+                          decoration: const InputDecoration(
+                            labelText: 'Category',
+                            border: OutlineInputBorder(),
+                          ),
+                          value: _selectedCategory,
+                          isExpanded: true,
+                          items: _categories.map((String category) {
+                            return DropdownMenuItem<String>(
+                              value: category,
+                              child: Text(
+                                category,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            );
+                          }).toList(),
+                          onChanged: (String? newValue) {
+                            setState(() {
+                              _selectedCategory = newValue;
+                              viewModel.categoryController.text = newValue ?? '';
+                            });
+                          },
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please select a category';
+                            }
+                            return null;
+                          },
+                        ),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
@@ -610,8 +680,12 @@ class ProductForm extends StatelessWidget {
                         ? null
                         : () {
                             if (formKey.currentState!.validate()) {
-                              if (existingProduct != null) {
-                                viewModel.updateProduct(existingProduct!.id);
+                              if (_selectedCategory != null) {
+                                viewModel.categoryController.text = _selectedCategory!;
+                              }
+                              
+                              if (widget.existingProduct != null) {
+                                viewModel.updateProduct(widget.existingProduct!.id);
                               } else {
                                 viewModel.addProduct();
                               }
@@ -619,7 +693,7 @@ class ProductForm extends StatelessWidget {
                             }
                           },
                     child: Text(
-                      existingProduct == null ? 'Add Product' : 'Update Product',
+                      widget.existingProduct == null ? 'Add Product' : 'Update Product',
                     ),
                   ),
                 ),

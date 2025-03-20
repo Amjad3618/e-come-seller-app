@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import '../Repositories/produxt_repo.dart';
 import '../models/product_model.dart';
@@ -24,10 +25,14 @@ class ProductViewModel extends ChangeNotifier {
   List<String> existingImages = [];
   List<String> imagesToDelete = [];
   
+  // Category list
+  List<String> _categories = [];
+  
   // Getters
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
   List<ProductsModel> get products => _products;
+  List<String> get categories => _categories;
   
   ProductViewModel({
     ProductRepository? repository,
@@ -48,6 +53,40 @@ class ProductViewModel extends ChangeNotifier {
       }
     );
   }
+
+// Method to fetch categories from Firebase
+Future<List<String>> fetchCategories() async {
+  try {
+    // Reference to the categories collection in Firestore
+    final categoriesCollection = FirebaseFirestore.instance.collection('shop_categories');
+    
+    // Get all documents from the categories collection
+    final querySnapshot = await categoriesCollection.get();
+    
+    // Extract category names from documents
+    _categories = querySnapshot.docs.map((doc) {
+      // Get the category name from the 'name' field in each document
+      // Assuming your category documents have a 'name' field
+      return doc.data()['name'] as String;
+      
+      // If you're not finding the category names, check what fields your documents have:
+      // Map<String, dynamic> data = doc.data();
+      // print("Category document data: $data");
+      // return data['name'] as String; // Use the correct field name
+    }).toList();
+    
+    // Sort categories alphabetically
+    _categories.sort();
+    
+    return _categories;
+  } catch (e) {
+    // Handle error
+    print('Error fetching categories: $e');
+    _errorMessage = "Error loading categories: $e";
+    notifyListeners();
+    return [];
+  }
+}
 
   Future<void> addProduct() async {
     if (!_validateForm()) return;

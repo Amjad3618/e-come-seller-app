@@ -130,4 +130,16 @@ class DbService {
   }) async {
     await _ordersCollection.doc(docId).update(data);
   }
+   Stream<QuerySnapshot> readCategoriess() {
+    return _firestore
+        .collection('shop_categories')
+        .orderBy('name')
+        .snapshots();
+  }
+  Stream<QuerySnapshot> getcategories() {
+    return _firestore
+        .collection('shop_categories')
+        .orderBy('name')
+        .snapshots();
+  }
 }
