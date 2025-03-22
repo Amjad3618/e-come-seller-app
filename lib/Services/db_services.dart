@@ -65,7 +65,43 @@ class DbService {
     await _productsCollection.doc(docId).delete();
   }
 
-  // PROMOS & BANNERS
+  // BANNERS - Specific Banner methods
+  Stream<QuerySnapshot> readBanners() {
+    return _bannersCollection
+        .orderBy("created_at", descending: true)
+        .snapshots();
+  }
+
+  Stream<QuerySnapshot> readActiveBanners() {
+    return _bannersCollection
+        .where('isActive', isEqualTo: true)
+        .orderBy("created_at", descending: true)
+        .snapshots();
+  }
+
+  Future<void> createBanner({required Map<String, dynamic> data}) async {
+    // Add timestamp
+    data['created_at'] = FieldValue.serverTimestamp();
+    data['updated_at'] = FieldValue.serverTimestamp();
+    
+    await _bannersCollection.add(data);
+  }
+
+  Future<void> updateBanner({
+    required String docId, 
+    required Map<String, dynamic> data
+  }) async {
+    // Add updated timestamp
+    data['updated_at'] = FieldValue.serverTimestamp();
+    
+    await _bannersCollection.doc(docId).update(data);
+  }
+
+  Future<void> deleteBanner({required String docId}) async {
+    await _bannersCollection.doc(docId).delete();
+  }
+
+  // PROMOS & BANNERS (legacy method, maintained for compatibility)
   Stream<QuerySnapshot> readPromosOrBanners(bool isPromo) {
     return isPromo 
         ? _promosCollection.snapshots()
@@ -77,6 +113,11 @@ class DbService {
     required bool isPromo
   }) async {
     final collection = isPromo ? _promosCollection : _bannersCollection;
+    
+    // Add timestamp
+    data['created_at'] = FieldValue.serverTimestamp();
+    data['updated_at'] = FieldValue.serverTimestamp();
+    
     await collection.add(data);
   }
 
@@ -86,6 +127,10 @@ class DbService {
     required String id
   }) async {
     final collection = isPromo ? _promosCollection : _bannersCollection;
+    
+    // Add updated timestamp
+    data['updated_at'] = FieldValue.serverTimestamp();
+    
     await collection.doc(id).update(data);
   }
 
@@ -130,12 +175,14 @@ class DbService {
   }) async {
     await _ordersCollection.doc(docId).update(data);
   }
-   Stream<QuerySnapshot> readCategoriess() {
+  
+  Stream<QuerySnapshot> readCategoriess() {
     return _firestore
         .collection('shop_categories')
         .orderBy('name')
         .snapshots();
   }
+  
   Stream<QuerySnapshot> getcategories() {
     return _firestore
         .collection('shop_categories')

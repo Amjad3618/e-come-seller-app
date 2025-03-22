@@ -174,10 +174,15 @@ class _HomePageState extends State<HomePage> {
                       children: [
                         ElevatedButton(
                           onPressed: () {
+                            // Navigator.pushNamed(
+                            //   context,
+                            //   "/promos",
+                            //   arguments: {"promo": false},
+                            // );
                             Navigator.pushNamed(
                               context,
-                              "/promos",
-                              arguments: {"promo": false},
+                              "/BannerPage",
+                             
                             );
                           },
                           child: Text("Banners"),
