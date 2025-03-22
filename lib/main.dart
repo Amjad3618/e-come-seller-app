@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'Helper/ui_helper.dart';
 import 'Pages/product_page.dart';
+import 'Pages/promo_page.dart';
 import 'utils/color.dart';
 import 'view_model.dart/category_view_model.dart';
 import 'view_model.dart/product_view_model.dart';
@@ -14,14 +15,16 @@ import 'view_model.dart/product_view_model.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  
+
   runApp(
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => AdminProvider()),
         ChangeNotifierProvider(create: (context) => CategoryViewModel()),
-        ChangeNotifierProvider(create: (_) => AuthController()), // Auth provider
-          ChangeNotifierProvider(create: (context) => ProductViewModel()),
+        ChangeNotifierProvider(
+          create: (_) => AuthController(),
+        ), // Auth provider
+        ChangeNotifierProvider(create: (context) => ProductViewModel()),
       ],
       child: MyApp(),
     ),
@@ -50,10 +53,10 @@ class MyApp extends StatelessWidget {
       ),
       home: UIHelper(), // Automatically navigate based on login state
       routes: {
-        
         "/CategoriePage": (context) => CategoryPage(),
         "/HomePage": (context) => HomePage(),
-         "/ProductPage": (context) => ProductPage(),
+        "/ProductPage": (context) => ProductPage(),
+        '/promos': (context) => PromoBannerPage(),
       },
     );
   }

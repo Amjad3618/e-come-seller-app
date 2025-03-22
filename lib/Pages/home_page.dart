@@ -173,10 +173,25 @@ class _HomePageState extends State<HomePage> {
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
                         ElevatedButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            Navigator.pushNamed(
+                              context,
+                              "/promos",
+                              arguments: {"promo": false},
+                            );
+                          },
                           child: Text("Banners"),
                         ),
-                        ElevatedButton(onPressed: () {}, child: Text("promos")),
+                        ElevatedButton(
+                          onPressed: () {
+                            Navigator.pushNamed(
+                              context,
+                              "/promos",
+                              arguments: {"promo": true},
+                            );
+                          },
+                          child: Text("promos"),
+                        ),
                       ],
                     ),
                     SizedBox(height: 10),
