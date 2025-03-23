@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../utils/color.dart';
+
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
 
@@ -12,9 +14,9 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: AppColors.primary,
         automaticallyImplyLeading: false,
         title: const Text('Admin Dashboard'),
-        backgroundColor: Colors.blueGrey[800],
         foregroundColor: Colors.white,
         elevation: 0,
         actions: [
@@ -56,13 +58,13 @@ class _HomePageState extends State<HomePage> {
                           onPressed: () {
                             Navigator.pushNamed(context, '/ProductPage');
                           },
-                          child: Text("Products"),
+                          child: Text("Products",style: TextStyle(color: AppColors.scaffold,fontSize: 17),),
                         ),
                         ElevatedButton(
                           onPressed: () {
                             Navigator.pushNamed(context, '/OrdersPage');
                           },
-                          child: Text("Order"),
+                          child: Text("Order",style: TextStyle(color: AppColors.scaffold,fontSize: 17),),
                         ),
                       ],
                     ),
@@ -72,24 +74,24 @@ class _HomePageState extends State<HomePage> {
                       children: [
                         ElevatedButton(
                           onPressed: () {
-                            // Navigator.pushNamed(
-                            //   context,
-                            //   "/promos",
-                            //   arguments: {"promo": false},
-                            // );
-                            Navigator.pushNamed(context, "/BannerPage");
+                            Navigator.pushNamed(
+                              context,
+                              "/PromoBannePage",
+                              arguments: {"promo": false},
+                            );
+                            // Navigator.pushNamed(context, "/BannerPage");
                           },
-                          child: Text("Banners"),
+                          child: Text("Banners" ,style: TextStyle(color: AppColors.scaffold,fontSize: 17),),
                         ),
                         ElevatedButton(
                           onPressed: () {
                             Navigator.pushNamed(
                               context,
-                              "/promos",
+                              "/PromoBannePage",
                               arguments: {"promo": true},
                             );
                           },
-                          child: Text("promos"),
+                          child: Text("promos" ,style: TextStyle(color: AppColors.scaffold,fontSize: 17),),
                         ),
                       ],
                     ),
@@ -101,13 +103,13 @@ class _HomePageState extends State<HomePage> {
                           onPressed: () {
                             Navigator.pushNamed(context, '/CategoriePage');
                           },
-                          child: Text("Categories"),
+                          child: Text("Categories" ,style: TextStyle(color: AppColors.scaffold,fontSize: 17),),
                         ),
                         ElevatedButton(
                           onPressed: () {
-                            Navigator.pushNamed(context, 'CouponPage');
+                            Navigator.pushNamed(context, '/CouponPage');
                           },
-                          child: Text("coupon"),
+                          child: Text("coupon" ,style: TextStyle(color: AppColors.scaffold,fontSize: 17),),
                         ),
                       ],
                     ),

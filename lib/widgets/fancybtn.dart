@@ -112,7 +112,7 @@ class _FancyButtonState extends State<FancyButton> with SingleTickerProviderStat
                   widget.text,
                   style: const TextStyle(
                     color: Colors.white,
-                    fontSize: 18,
+                    fontSize: 23,
                     fontWeight: FontWeight.bold,
                     letterSpacing: 0.5,
                   ),

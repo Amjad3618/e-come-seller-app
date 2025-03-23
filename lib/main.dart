@@ -9,7 +9,7 @@ import 'Helper/ui_helper.dart';
 import 'Pages/coupon_page.dart';
 import 'Pages/orders_page.dart';
 import 'Pages/product_page.dart';
-import 'Pages/promo_page.dart';
+import 'Pages/promo__banner_page.dart';
 import 'utils/color.dart';
 
 void main() async {
@@ -56,7 +56,7 @@ class MyApp extends StatelessWidget {
         "/CategoriePage": (context) => CategoriePage(),
         "/HomePage": (context) => HomePage(),
         "/ProductPage": (context) => ProductPage(),
-        '/PromoPage': (context) => PromoPage(),
+        '/PromoBannePage': (context) => PromoBannePage(),
         '/OrdersPage': (context) => OrdersPage(),
         '/CouponPage': (context) => CouponPage(),
       },

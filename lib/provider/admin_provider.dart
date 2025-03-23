@@ -1,13 +1,16 @@
+// ignore_for_file: unused_field
 
 import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/material.dart';
+import 'package:e_come_seller_1/Services/db_services.dart';
+import 'package:flutter/widgets.dart';
 
-import '../Services/db_services.dart';
 
-class AdminProvider extends ChangeNotifier{
-  List<QueryDocumentSnapshot> categories = [];
+
+class AdminProvider extends ChangeNotifier {
+
+    List<QueryDocumentSnapshot> categories = [];
   StreamSubscription<QuerySnapshot>? _categorySubscription;
   List<QueryDocumentSnapshot> products = [];
   StreamSubscription<QuerySnapshot>? _productsSubscription;
@@ -22,12 +25,23 @@ class AdminProvider extends ChangeNotifier{
   int ordersOnTheWay = 0;
   int orderPendingProcess=0;
 
-  AdminProvider(){
-    getCategories();
-    getProducts();
-    readOrders();
-  }
+AdminProvider(){
+  getCategories();
+  getProducts();
+  readOrders();
+}
 
+  
+
+  // GET all the products
+  void getProducts() {
+    _productsSubscription?.cancel();
+    _productsSubscription = DbService().readProducts().listen((snapshot) {
+      products = snapshot.docs;
+      totalProducts = snapshot.docs.length;
+      notifyListeners();
+    });
+}
   // GET all the categories
     void getCategories() {
     _categorySubscription?.cancel();
@@ -37,17 +51,7 @@ class AdminProvider extends ChangeNotifier{
       notifyListeners();
     });
   }
-  // GET all the products
-    void getProducts() {
-    _productsSubscription?.cancel();
-    _productsSubscription = DbService().readProducts().listen((snapshot) {
-      products = snapshot.docs;
-      totalProducts=snapshot.docs.length;
-      notifyListeners();
-    });
-  }
-
-  // read all the orders
+    // read all the orders
   void readOrders(){
      _ordersSubscription?.cancel();
     _ordersSubscription = DbService().readOrders().listen((snapshot) {
@@ -57,8 +61,7 @@ class AdminProvider extends ChangeNotifier{
       notifyListeners();
     });
   }
-
-  // to the various order types
+   // to the various order types
    void setOrderStatusCount(){
     ordersDelivered = 0;
     ordersCancelled = 0;
@@ -78,17 +81,4 @@ class AdminProvider extends ChangeNotifier{
     }
     notifyListeners();
   }
-
-void cancelProvider(){
-  _ordersSubscription?.cancel();
-  _productsSubscription?.cancel();
-  _categorySubscription?.cancel();
-}
-
-@override
-  void dispose() {
-    cancelProvider();
-    super.dispose();
-  }
-
 }
