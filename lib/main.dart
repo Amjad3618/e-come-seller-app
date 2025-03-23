@@ -6,6 +6,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'Helper/ui_helper.dart';
+import 'Pages/coupon_page.dart';
+import 'Pages/orders_page.dart';
 import 'Pages/product_page.dart';
 import 'Pages/promo_page.dart';
 import 'utils/color.dart';
@@ -18,13 +20,12 @@ void main() async {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => AdminProvider()),
-       
+
         ChangeNotifierProvider(
           create: (_) => AuthController(),
         ), // Auth provider
-       
       ],
-      
+
       child: MyApp(),
     ),
   );
@@ -56,6 +57,8 @@ class MyApp extends StatelessWidget {
         "/HomePage": (context) => HomePage(),
         "/ProductPage": (context) => ProductPage(),
         '/PromoPage': (context) => PromoPage(),
+        '/OrdersPage': (context) => OrdersPage(),
+        '/CouponPage': (context) => CouponPage(),
       },
     );
   }

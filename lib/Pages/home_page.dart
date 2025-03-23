@@ -1,7 +1,4 @@
-import 'package:e_come_seller_1/utils/color.dart';
 import 'package:flutter/material.dart';
-
-import '../widgets/fancy_text.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -30,110 +27,6 @@ class _HomePageState extends State<HomePage> {
       ),
       body: Column(
         children: [
-          Container(
-            height: 220,
-            decoration: BoxDecoration(
-              color: AppColors.primary,
-              borderRadius: const BorderRadius.only(
-                bottomLeft: Radius.circular(30),
-                bottomRight: Radius.circular(30),
-              ),
-            ),
-            child: Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(20),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const CustomText(
-                            text: 'Total Revenue',
-                            fontSize: 16,
-                            color: Colors.white,
-                          ),
-                          const SizedBox(height: 10),
-                          const CustomText(
-                            text: '\$12,000',
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
-                        ],
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(20),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const CustomText(
-                            text: 'Total Orders',
-                            fontSize: 16,
-                            color: Colors.white,
-                          ),
-                          const SizedBox(height: 10),
-                          const CustomText(
-                            text: '500',
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(20),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const CustomText(
-                            text: 'Total Revenue',
-                            fontSize: 16,
-                            color: Colors.white,
-                          ),
-                          const SizedBox(height: 10),
-                          const CustomText(
-                            text: '\$12,000',
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
-                        ],
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(20),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const CustomText(
-                            text: 'Total Orders',
-                            fontSize: 16,
-                            color: Colors.white,
-                          ),
-                          const SizedBox(height: 10),
-                          const CustomText(
-                            text: '500',
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
           SizedBox(height: 10),
           Padding(
             padding: const EdgeInsets.all(8.0),
@@ -165,7 +58,12 @@ class _HomePageState extends State<HomePage> {
                           },
                           child: Text("Products"),
                         ),
-                        ElevatedButton(onPressed: () {}, child: Text("Order")),
+                        ElevatedButton(
+                          onPressed: () {
+                            Navigator.pushNamed(context, '/OrdersPage');
+                          },
+                          child: Text("Order"),
+                        ),
                       ],
                     ),
                     SizedBox(height: 10),
@@ -179,11 +77,7 @@ class _HomePageState extends State<HomePage> {
                             //   "/promos",
                             //   arguments: {"promo": false},
                             // );
-                            Navigator.pushNamed(
-                              context,
-                              "/BannerPage",
-                             
-                            );
+                            Navigator.pushNamed(context, "/BannerPage");
                           },
                           child: Text("Banners"),
                         ),
@@ -209,7 +103,12 @@ class _HomePageState extends State<HomePage> {
                           },
                           child: Text("Categories"),
                         ),
-                        ElevatedButton(onPressed: () {}, child: Text("coupon")),
+                        ElevatedButton(
+                          onPressed: () {
+                            Navigator.pushNamed(context, 'CouponPage');
+                          },
+                          child: Text("coupon"),
+                        ),
                       ],
                     ),
                   ],
