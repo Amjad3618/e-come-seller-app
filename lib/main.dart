@@ -9,9 +9,6 @@ import 'Helper/ui_helper.dart';
 import 'Pages/product_page.dart';
 import 'Pages/promo_page.dart';
 import 'utils/color.dart';
-import 'view_model.dart/banner_view_model.dart';
-import 'view_model.dart/category_view_model.dart';
-import 'view_model.dart/product_view_model.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -21,12 +18,11 @@ void main() async {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => AdminProvider()),
-        ChangeNotifierProvider(create: (context) => CategoryViewModel()),
+       
         ChangeNotifierProvider(
           create: (_) => AuthController(),
         ), // Auth provider
-        ChangeNotifierProvider(create: (context) => ProductViewModel()),
-           ChangeNotifierProvider(create: (_) => BannerViewModel()),
+       
       ],
       
       child: MyApp(),
@@ -56,10 +52,10 @@ class MyApp extends StatelessWidget {
       ),
       home: UIHelper(), // Automatically navigate based on login state
       routes: {
-        "/CategoriePage": (context) => CategoryPage(),
+        "/CategoriePage": (context) => CategoriePage(),
         "/HomePage": (context) => HomePage(),
         "/ProductPage": (context) => ProductPage(),
-        '/BannerPage': (context) => BannerPage(),
+        '/PromoPage': (context) => PromoPage(),
       },
     );
   }
