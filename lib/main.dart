@@ -2,6 +2,8 @@ import 'package:e_come_seller_1/Pages/categorie_page.dart';
 import 'package:e_come_seller_1/Pages/home_page.dart';
 import 'package:e_come_seller_1/Services/auth_services.dart';
 import 'package:e_come_seller_1/provider/admin_provider.dart';
+import 'package:e_come_seller_1/provider/categories_providers.dart';
+import 'package:e_come_seller_1/provider/product_provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -20,6 +22,8 @@ void main() async {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => AdminProvider()),
+        ChangeNotifierProvider(create: (_) => CategoryProvider()),
+        ChangeNotifierProvider(create: (_) => ProductProvider()),
 
         ChangeNotifierProvider(
           create: (_) => AuthController(),
@@ -52,6 +56,7 @@ class MyApp extends StatelessWidget {
         ),
       ),
       home: UIHelper(), // Automatically navigate based on login state
+
       routes: {
         "/CategoriePage": (context) => CategoriePage(),
         "/HomePage": (context) => HomePage(),

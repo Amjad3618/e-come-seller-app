@@ -3,13 +3,13 @@ import 'package:flutter/material.dart';
 class EmailTextField extends StatelessWidget {
   final TextEditingController controller;
   final String hintText;
-  final Icon prefixIcon;
+  final Icon? prefixIcon;
 
   const EmailTextField({
     super.key,
     required this.controller,
     required this.hintText,
-    required this.prefixIcon,
+     this.prefixIcon,
   });
 
   @override
