@@ -9,11 +9,8 @@ class ProductTile extends StatelessWidget {
   final dynamic product;
   final BuildContext context;
 
-  const ProductTile({
-    Key? key,
-    required this.product,
-    required this.context,
-  }) : super(key: key);
+  const ProductTile({Key? key, required this.product, required this.context})
+    : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -47,25 +44,25 @@ class ProductTile extends StatelessWidget {
                     height: 100,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(10),
-                      image: product.images.isNotEmpty
-                          ? DecorationImage(
-                              image: NetworkImage(product.images.first),
-                              fit: BoxFit.cover,
-                            )
-                          : null,
-                      color: product.images.isEmpty 
-                          ? Colors.grey[300] 
-                          : null,
+                      image:
+                          product.images.isNotEmpty
+                              ? DecorationImage(
+                                image: NetworkImage(product.images.first),
+                                fit: BoxFit.cover,
+                              )
+                              : null,
+                      color: product.images.isEmpty ? Colors.grey[300] : null,
                     ),
-                    child: product.images.isEmpty
-                        ? const Center(
-                            child: Icon(
-                              Icons.image_not_supported, 
-                              size: 40, 
-                              color: Colors.grey,
-                            ),
-                          )
-                        : null,
+                    child:
+                        product.images.isEmpty
+                            ? const Center(
+                              child: Icon(
+                                Icons.image_not_supported,
+                                size: 40,
+                                color: Colors.grey,
+                              ),
+                            )
+                            : null,
                   ),
 
                   // Product Details
@@ -79,11 +76,35 @@ class ProductTile extends StatelessWidget {
                           Text(
                             product.name,
                             style: const TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
+                              fontSize: 20,
+                              fontWeight: FontWeight.w900,
                             ),
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
+                          ),
+
+                          Row(
+                            children: [
+                              Text(
+                                "${product.maxQuantity.toString()} -->",
+                                style: const TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: AppColors.scaffold,
+                                ),
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              SizedBox(width: 10),
+                              Text(
+                                "Availabe Quantity",
+                                style: const TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.bold,
+                                  color: AppColors.whitecolor,
+                                ),
+                              ),
+                            ],
                           ),
 
                           // Category and Image Count
@@ -121,6 +142,7 @@ class ProductTile extends StatelessWidget {
                                   color: AppColors.whitecolor,
                                 ),
                               ),
+
                               const SizedBox(width: 8),
                               // Old Price (if exists)
                               if (product.oldprice > 0)
@@ -152,7 +174,9 @@ class ProductTile extends StatelessWidget {
                                       decoration: BoxDecoration(
                                         borderRadius: BorderRadius.circular(8),
                                         image: DecorationImage(
-                                          image: NetworkImage(product.images[index]),
+                                          image: NetworkImage(
+                                            product.images[index],
+                                          ),
                                           fit: BoxFit.cover,
                                         ),
                                       ),
@@ -177,12 +201,7 @@ class ProductTile extends StatelessWidget {
                 children: [
                   // Edit Button
                   ElevatedButton.icon(
-                    onPressed: () {
-                      CustomToast2.showError(
-                        'Edit not implemented',
-                        context,
-                      );
-                    },
+                    onPressed: () {},
                     icon: const Icon(Icons.edit, size: 18),
                     label: const Text('Edit'),
                     style: ElevatedButton.styleFrom(
@@ -202,33 +221,40 @@ class ProductTile extends StatelessWidget {
                     onPressed: () {
                       showDialog(
                         context: context,
-                        builder: (context) => AlertDialog(
-                          title: const Text('Confirm Delete'),
-                          content: const Text(
-                            'Are you sure you want to delete this product?',
-                          ),
-                          actions: [
-                            TextButton(
-                              onPressed: () => Navigator.pop(context),
-                              child: const Text('Cancel'),
-                            ),
-                            TextButton(
-                              onPressed: () async {
-                                final provider = Provider.of<ProductProvider>(context, listen: false);
-                                await provider.deleteProduct(product.id);
-                                Navigator.pop(context);
-                                CustomToast2.showSuccess(
-                                  'Product deleted',
-                                  context,
-                                );
-                              },
-                              child: const Text(
-                                'Delete',
-                                style: TextStyle(color: Colors.red),
+                        barrierDismissible:
+                            false, // This allows dismissing the dialog by tapping outside
+                        builder:
+                            (context) => AlertDialog(
+                              title: const Text('Confirm Delete'),
+                              content: const Text(
+                                'Are you sure you want to delete this product?',
                               ),
+                              actions: [
+                                TextButton(
+                                  onPressed: () => Navigator.pop(context),
+                                  child: const Text('Cancel'),
+                                ),
+                                TextButton(
+                                  onPressed: () async {
+                                    final provider =
+                                        Provider.of<ProductProvider>(
+                                          context,
+                                          listen: false,
+                                        );
+                                    await provider.deleteProduct(product.id);
+                                    Navigator.pop(context);
+                                    CustomToast2.showSuccess(
+                                      'Product deleted',
+                                      context,
+                                    );
+                                  },
+                                  child: const Text(
+                                    'Delete',
+                                    style: TextStyle(color: Colors.red),
+                                  ),
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
                       );
                     },
                     icon: const Icon(Icons.delete, size: 18),

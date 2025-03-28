@@ -41,6 +41,7 @@ class _CategoriePageState extends State<CategoriePage> {
     });
 
     showDialog(
+      barrierDismissible: false,
       context: context,
       builder: (context) => StatefulBuilder(
         builder: (context, setState) => AlertDialog(
@@ -186,7 +187,7 @@ class _CategoriePageState extends State<CategoriePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Categories")),
+      appBar: AppBar(title: const Text("Categories"),backgroundColor: AppColors.primaryDark,),
       body: Consumer<CategoryProvider>(
         builder: (context, provider, child) {
           if (provider.isLoading && provider.categories.isEmpty) {
@@ -319,7 +320,7 @@ class _CategoriePageState extends State<CategoriePage> {
         },
       ),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: AppColors.primary,
+        backgroundColor: AppColors.primaryDark,
         onPressed: _showAddCategoryDialog,
         child: const Icon(Icons.add_circle, size: 40, color: Colors.white),
       ),

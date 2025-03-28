@@ -13,10 +13,11 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.primaryDark,
       appBar: AppBar(
-        backgroundColor: AppColors.primary,
+        backgroundColor: AppColors.primaryDark,
         automaticallyImplyLeading: false,
-        title: const Text('Admin Dashboard'),
+        title: const Text('Admin Dashboard',style: TextStyle(fontSize: 24,fontWeight: FontWeight.w600),),
         foregroundColor: Colors.white,
         elevation: 0,
         actions: [
@@ -35,8 +36,13 @@ class _HomePageState extends State<HomePage> {
             child: Container(
               height: 200,
               decoration: BoxDecoration(
+                color: AppColors.scaffold,
                 borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: Colors.white),
+                border: Border.all(
+                  color: Colors.grey.shade200,
+                  width: 5,
+                  strokeAlign: BorderSide.strokeAlignCenter,
+                ),
                 boxShadow: [
                   BoxShadow(
                     color: Colors.grey.withOpacity(0.1),
@@ -58,13 +64,25 @@ class _HomePageState extends State<HomePage> {
                           onPressed: () {
                             Navigator.pushNamed(context, '/ProductPage');
                           },
-                          child: Text("Products",style: TextStyle(color: AppColors.scaffold,fontSize: 17),),
+                          child: Text(
+                            "Add Products",
+                            style: TextStyle(
+                              color: AppColors.scaffold,
+                              fontSize: 17,
+                            ),
+                          ),
                         ),
                         ElevatedButton(
                           onPressed: () {
                             Navigator.pushNamed(context, '/OrdersPage');
                           },
-                          child: Text("Order",style: TextStyle(color: AppColors.scaffold,fontSize: 17),),
+                          child: Text(
+                            "Check Orders",
+                            style: TextStyle(
+                              color: AppColors.scaffold,
+                              fontSize: 17,
+                            ),
+                          ),
                         ),
                       ],
                     ),
@@ -81,7 +99,13 @@ class _HomePageState extends State<HomePage> {
                             );
                             // Navigator.pushNamed(context, "/BannerPage");
                           },
-                          child: Text("Banners" ,style: TextStyle(color: AppColors.scaffold,fontSize: 17),),
+                          child: Text(
+                            "Add Banners",
+                            style: TextStyle(
+                              color: AppColors.scaffold,
+                              fontSize: 17,
+                            ),
+                          ),
                         ),
                         ElevatedButton(
                           onPressed: () {
@@ -91,7 +115,13 @@ class _HomePageState extends State<HomePage> {
                               arguments: {"promo": true},
                             );
                           },
-                          child: Text("promos" ,style: TextStyle(color: AppColors.scaffold,fontSize: 17),),
+                          child: Text(
+                            "Add promos",
+                            style: TextStyle(
+                              color: AppColors.scaffold,
+                              fontSize: 17,
+                            ),
+                          ),
                         ),
                       ],
                     ),
@@ -103,13 +133,25 @@ class _HomePageState extends State<HomePage> {
                           onPressed: () {
                             Navigator.pushNamed(context, '/CategoriePage');
                           },
-                          child: Text("Categories" ,style: TextStyle(color: AppColors.scaffold,fontSize: 17),),
+                          child: Text(
+                            "Add Categories",
+                            style: TextStyle(
+                              color: AppColors.scaffold,
+                              fontSize: 17,
+                            ),
+                          ),
                         ),
                         ElevatedButton(
                           onPressed: () {
                             Navigator.pushNamed(context, '/CouponPage');
                           },
-                          child: Text("coupon" ,style: TextStyle(color: AppColors.scaffold,fontSize: 17),),
+                          child: Text(
+                            "Add coupon",
+                            style: TextStyle(
+                              color: AppColors.scaffold,
+                              fontSize: 17,
+                            ),
+                          ),
                         ),
                       ],
                     ),

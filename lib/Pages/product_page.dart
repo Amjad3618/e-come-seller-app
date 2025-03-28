@@ -78,6 +78,7 @@ class _ProductPageState extends State<ProductPage> {
     _selectedImages.clear();
 
     showDialog(
+      barrierDismissible: false,
       context: context,
       builder: (context) => StatefulBuilder(
         builder: (context, setState) => AlertDialog(
@@ -338,7 +339,8 @@ class _ProductPageState extends State<ProductPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Products')),
+      
+      appBar: AppBar(title: const Text('Products'),backgroundColor: AppColors.primaryDark,),
       body: Consumer<ProductProvider>(
         builder: (context, provider, child) {
           // Loading state
@@ -382,8 +384,9 @@ class _ProductPageState extends State<ProductPage> {
         },
       ),
       floatingActionButton: FloatingActionButton(
+        backgroundColor: AppColors.primaryDark,
         onPressed: _showAddProductDialog,
-        child: const Icon(Icons.add),
+        child: const Icon(Icons.add_circle_outline,color: AppColors.whitecolor,size: 40,),
       ),
     );
   }

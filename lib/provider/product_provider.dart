@@ -21,7 +21,75 @@ class ProductProvider with ChangeNotifier {
   List<String> get categories => _categories;
   bool get isLoading => _isLoading;
   String? get error => _error;
+ Future<bool> updateProduct({
+    required String productId,
+    required String name,
+    required String description,
+    required List<File> images,
+    required List<dynamic> existingImages,
+    required int oldPrice,
+    required int newPrice,
+    required String category,
+    required int maxQuantity,
+  }) async {
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
 
+    try {
+      // Upload new images to Firebase Storage
+      List<String> newImageUrls = [];
+      for (var image in images) {
+        final storageRef = _storage.ref().child(
+          'products/${DateTime.now().millisecondsSinceEpoch}_${image.path.split('/').last}',
+        );
+
+        await storageRef.putFile(image);
+        final imageUrl = await storageRef.getDownloadURL();
+        newImageUrls.add(imageUrl);
+      }
+
+      // Combine existing and new image URLs
+      List<String> allImageUrls = List.from(existingImages);
+      allImageUrls.addAll(newImageUrls);
+
+      // Limit to 5 images
+      if (allImageUrls.length > 5) {
+        // Remove excess images from storage
+        for (var i = 5; i < allImageUrls.length; i++) {
+          await FirebaseStorage.instance.refFromURL(allImageUrls[i]).delete();
+        }
+        allImageUrls = allImageUrls.take(5).toList();
+      }
+
+      // Prepare updated product data
+      final updatedProductData = {
+        "name": name,
+        "desc": description,
+        "images": allImageUrls,
+        "new_price": newPrice,
+        "old_price": oldPrice,
+        "category": category,
+        "quantity": maxQuantity,
+        "updated_at": FieldValue.serverTimestamp(),
+      };
+
+      // Update in Firestore
+      await _dbService.updateproducts(docid: productId, data: updatedProductData);
+
+      // Refresh products list
+      await fetchProducts();
+
+      _isLoading = false;
+      notifyListeners();
+      return true;
+    } catch (e) {
+      _error = e.toString();
+      _isLoading = false;
+      notifyListeners();
+      return false;
+    }
+  }
   // Fetch Products
   Future<void> fetchProducts() async {
     _isLoading = true;
@@ -121,30 +189,30 @@ class ProductProvider with ChangeNotifier {
   }
 
   // Update Product
-  Future<bool> updateProduct({
-    required String productId,
-    required Map<String, dynamic> updatedData,
-  }) async {
-    _isLoading = true;
-    _error = null;
-    notifyListeners();
+  // Future<bool> updateProduct({
+  //   required String productId,
+  //   required Map<String, dynamic> updatedData,
+  // }) async {
+  //   _isLoading = true;
+  //   _error = null;
+  //   notifyListeners();
 
-    try {
-      await _dbService.updateproducts(docid: productId, data: updatedData);
+  //   try {
+  //     await _dbService.updateproducts(docid: productId, data: updatedData);
 
-      // Refresh products list
-      await fetchProducts();
+  //     // Refresh products list
+  //     await fetchProducts();
 
-      _isLoading = false;
-      notifyListeners();
-      return true;
-    } catch (e) {
-      _error = e.toString();
-      _isLoading = false;
-      notifyListeners();
-      return false;
-    }
-  }
+  //     _isLoading = false;
+  //     notifyListeners();
+  //     return true;
+  //   } catch (e) {
+  //     _error = e.toString();
+  //     _isLoading = false;
+  //     notifyListeners();
+  //     return false;
+  //   }
+  // }
 
   // Delete Product
   Future<bool> deleteProduct(String productId) async {
