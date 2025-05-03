@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:firebase_auth/firebase_auth.dart'; // Added for Auth
 
 import '../Services/db_services.dart';
 import '../models/product_model.dart';
@@ -9,6 +10,7 @@ import '../models/product_model.dart';
 class ProductProvider with ChangeNotifier {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseStorage _storage = FirebaseStorage.instance;
+  final FirebaseAuth _auth = FirebaseAuth.instance; // Added for Auth
   final DbService _dbService = DbService();
 
   List<ProductsModel> _products = [];
@@ -21,75 +23,7 @@ class ProductProvider with ChangeNotifier {
   List<String> get categories => _categories;
   bool get isLoading => _isLoading;
   String? get error => _error;
- Future<bool> updateProduct({
-    required String productId,
-    required String name,
-    required String description,
-    required List<File> images,
-    required List<dynamic> existingImages,
-    required int oldPrice,
-    required int newPrice,
-    required String category,
-    required int maxQuantity,
-  }) async {
-    _isLoading = true;
-    _error = null;
-    notifyListeners();
 
-    try {
-      // Upload new images to Firebase Storage
-      List<String> newImageUrls = [];
-      for (var image in images) {
-        final storageRef = _storage.ref().child(
-          'products/${DateTime.now().millisecondsSinceEpoch}_${image.path.split('/').last}',
-        );
-
-        await storageRef.putFile(image);
-        final imageUrl = await storageRef.getDownloadURL();
-        newImageUrls.add(imageUrl);
-      }
-
-      // Combine existing and new image URLs
-      List<String> allImageUrls = List.from(existingImages);
-      allImageUrls.addAll(newImageUrls);
-
-      // Limit to 5 images
-      if (allImageUrls.length > 5) {
-        // Remove excess images from storage
-        for (var i = 5; i < allImageUrls.length; i++) {
-          await FirebaseStorage.instance.refFromURL(allImageUrls[i]).delete();
-        }
-        allImageUrls = allImageUrls.take(5).toList();
-      }
-
-      // Prepare updated product data
-      final updatedProductData = {
-        "name": name,
-        "desc": description,
-        "images": allImageUrls,
-        "new_price": newPrice,
-        "old_price": oldPrice,
-        "category": category,
-        "quantity": maxQuantity,
-        "updated_at": FieldValue.serverTimestamp(),
-      };
-
-      // Update in Firestore
-      await _dbService.updateproducts(docid: productId, data: updatedProductData);
-
-      // Refresh products list
-      await fetchProducts();
-
-      _isLoading = false;
-      notifyListeners();
-      return true;
-    } catch (e) {
-      _error = e.toString();
-      _isLoading = false;
-      notifyListeners();
-      return false;
-    }
-  }
   // Fetch Products
   Future<void> fetchProducts() async {
     _isLoading = true;
@@ -132,7 +66,7 @@ class ProductProvider with ChangeNotifier {
     }
   }
 
-  // Upload Product with Multiple Images
+  // Upload Product with Multiple Images and User UID
   Future<bool> uploadProduct({
     required String name,
     required String description,
@@ -147,11 +81,18 @@ class ProductProvider with ChangeNotifier {
     notifyListeners();
 
     try {
+      // Get current user ID
+      final User? currentUser = _auth.currentUser;
+      if (currentUser == null) {
+        throw Exception("User not authenticated");
+      }
+      final String uid = currentUser.uid;
+
       // Upload images to Firebase Storage
       List<String> imageUrls = [];
       for (var image in images) {
         final storageRef = _storage.ref().child(
-          'products/${DateTime.now().millisecondsSinceEpoch}_${image.path.split('/').last}',
+          'products/${uid}_${DateTime.now().millisecondsSinceEpoch}_${image.path.split('/').last}',
         );
 
         await storageRef.putFile(image);
@@ -159,7 +100,7 @@ class ProductProvider with ChangeNotifier {
         imageUrls.add(imageUrl);
       }
 
-      // Prepare product data
+      // Prepare product data with user ID
       final productData = {
         "name": name,
         "desc": description,
@@ -168,6 +109,7 @@ class ProductProvider with ChangeNotifier {
         "old_price": oldPrice,
         "category": category,
         "quantity": maxQuantity,
+        "product_id": uid, // Add user ID to product data
         "created_at": FieldValue.serverTimestamp(),
       };
 
@@ -188,31 +130,84 @@ class ProductProvider with ChangeNotifier {
     }
   }
 
-  // Update Product
-  // Future<bool> updateProduct({
-  //   required String productId,
-  //   required Map<String, dynamic> updatedData,
-  // }) async {
-  //   _isLoading = true;
-  //   _error = null;
-  //   notifyListeners();
+  // Update Product with UID
+  Future<bool> updateProduct({
+    required String productId,
+    required String name,
+    required String description,
+    required List<File> images,
+    required List<dynamic> existingImages,
+    required int oldPrice,
+    required int newPrice,
+    required String category,
+    required int maxQuantity,
+  }) async {
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
 
-  //   try {
-  //     await _dbService.updateproducts(docid: productId, data: updatedData);
+    try {
+      // Get current user ID
+      final User? currentUser = _auth.currentUser;
+      if (currentUser == null) {
+        throw Exception("User not authenticated");
+      }
+      final String uid = currentUser.uid;
 
-  //     // Refresh products list
-  //     await fetchProducts();
+      // Upload new images to Firebase Storage
+      List<String> newImageUrls = [];
+      for (var image in images) {
+        final storageRef = _storage.ref().child(
+          'products/${uid}_${DateTime.now().millisecondsSinceEpoch}_${image.path.split('/').last}',
+        );
 
-  //     _isLoading = false;
-  //     notifyListeners();
-  //     return true;
-  //   } catch (e) {
-  //     _error = e.toString();
-  //     _isLoading = false;
-  //     notifyListeners();
-  //     return false;
-  //   }
-  // }
+        await storageRef.putFile(image);
+        final imageUrl = await storageRef.getDownloadURL();
+        newImageUrls.add(imageUrl);
+      }
+
+      // Combine existing and new image URLs
+      List<String> allImageUrls = List.from(existingImages);
+      allImageUrls.addAll(newImageUrls);
+
+      // Limit to 5 images
+      if (allImageUrls.length > 5) {
+        // Remove excess images from storage
+        for (var i = 5; i < allImageUrls.length; i++) {
+          await FirebaseStorage.instance.refFromURL(allImageUrls[i]).delete();
+        }
+        allImageUrls = allImageUrls.take(5).toList();
+      }
+
+      // Prepare updated product data with user ID
+      final updatedProductData = {
+        "name": name,
+        "desc": description,
+        "images": allImageUrls,
+        "new_price": newPrice,
+        "old_price": oldPrice,
+        "category": category,
+        "quantity": maxQuantity,
+        "user_id": uid, // Add user ID to product data
+        "updated_at": FieldValue.serverTimestamp(),
+      };
+
+      // Update in Firestore
+      await _dbService.updateproducts(docid: productId, data: updatedProductData);
+
+      // Refresh products list
+      await fetchProducts();
+
+      _isLoading = false;
+      notifyListeners();
+      return true;
+    } catch (e) {
+      _error = e.toString();
+      _isLoading = false;
+      notifyListeners();
+      return false;
+    }
+  }
 
   // Delete Product
   Future<bool> deleteProduct(String productId) async {
@@ -248,6 +243,35 @@ class ProductProvider with ChangeNotifier {
       _isLoading = false;
       notifyListeners();
       return false;
+    }
+  }
+
+  // Fetch user's products only
+  Future<void> fetchUserProducts() async {
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      final User? currentUser = _auth.currentUser;
+      if (currentUser == null) {
+        throw Exception("User not authenticated");
+      }
+      final String uid = currentUser.uid;
+
+      final querySnapshot = await _firestore
+          .collection("shop_products")
+          .where("user_id", isEqualTo: uid)
+          .orderBy("name")
+          .get();
+
+      _products = ProductsModel.fromJsonList(querySnapshot.docs);
+      _isLoading = false;
+      notifyListeners();
+    } catch (e) {
+      _error = e.toString();
+      _isLoading = false;
+      notifyListeners();
     }
   }
 
