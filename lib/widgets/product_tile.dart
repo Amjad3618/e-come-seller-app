@@ -86,7 +86,7 @@ class ProductTile extends StatelessWidget {
                           Row(
                             children: [
                               Text(
-                                "${product.maxQuantity.toString()} -->",
+                                "${product.quantity.toString()} -->",
                                 style: const TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
@@ -135,7 +135,7 @@ class ProductTile extends StatelessWidget {
                             children: [
                               // New Price
                               Text(
-                                '\$${product.newprice}',
+                                '\$${product.newPrice}',
                                 style: const TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,
@@ -145,9 +145,9 @@ class ProductTile extends StatelessWidget {
 
                               const SizedBox(width: 8),
                               // Old Price (if exists)
-                              if (product.oldprice > 0)
+                              if (product.oldPrice > 0)
                                 Text(
-                                  '\$${product.oldprice}',
+                                  '\$${product.oldPrice}',
                                   style: TextStyle(
                                     fontSize: 14,
                                     color: AppColors.scaffold,

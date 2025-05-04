@@ -24,7 +24,8 @@ class _ProductPageState extends State<ProductPage> {
   final _quantityController = TextEditingController();
 
   // Selected category and images
-  String? _selectedCategory;
+  String? _selectedCategoryId;
+  String? _selectedCategoryName;
   List<File> _selectedImages = [];
 
   @override
@@ -74,7 +75,8 @@ class _ProductPageState extends State<ProductPage> {
     _oldPriceController.clear();
     _newPriceController.clear();
     _quantityController.clear();
-    _selectedCategory = null;
+    _selectedCategoryId = null;
+    _selectedCategoryName = null;
     _selectedImages.clear();
 
     showDialog(
@@ -112,7 +114,7 @@ class _ProductPageState extends State<ProductPage> {
                 ),
                 const SizedBox(height: 10),
 
-                // Category Dropdown
+                // Category Dropdown - FIXED implementation
                 Consumer<ProductProvider>(
                   builder: (context, provider, child) {
                     return DropdownButtonFormField<String>(
@@ -122,18 +124,26 @@ class _ProductPageState extends State<ProductPage> {
                           borderRadius: BorderRadius.circular(10),
                         ),
                       ),
-                      value: _selectedCategory,
-                      items: provider.categories
+                      value: _selectedCategoryId,
+                      items: provider.categoryMap
                           .map(
                             (category) => DropdownMenuItem(
-                              value: category,
-                              child: Text(category),
+                              value: category['id'],
+                              child: Text(category['name'] ?? ''),
                             ),
                           )
                           .toList(),
                       onChanged: (value) {
                         setState(() {
-                          _selectedCategory = value;
+                          if (value != null) {
+                            _selectedCategoryId = value;
+                            // Find the corresponding category name
+                            _selectedCategoryName = provider.categoryMap
+                                .firstWhere(
+                                  (category) => category['id'] == value,
+                                  orElse: () => {'name': ''},
+                                )['name'];
+                          }
                         });
                       },
                     );
@@ -283,7 +293,8 @@ class _ProductPageState extends State<ProductPage> {
                               images: _selectedImages,
                               oldPrice: int.tryParse(_oldPriceController.text) ?? 0,
                               newPrice: int.tryParse(_newPriceController.text) ?? 0,
-                              category: _selectedCategory!,
+                              categoryId: _selectedCategoryId!,
+                              categoryName: _selectedCategoryName!,
                               maxQuantity: int.tryParse(_quantityController.text) ?? 0,
                             );
 
@@ -320,7 +331,7 @@ class _ProductPageState extends State<ProductPage> {
       CustomToast2.showError('Please enter product name', context);
       return false;
     }
-    if (_selectedCategory == null) {
+    if (_selectedCategoryId == null || _selectedCategoryName == null) {
       CustomToast2.showError('Please select a category', context);
       return false;
     }
@@ -335,12 +346,10 @@ class _ProductPageState extends State<ProductPage> {
     return true;
   }
 
-  // Rest of the build method remains the same as in your original code
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      
-      appBar: AppBar(title: const Text('Products'),backgroundColor: AppColors.primaryDark,),
+      appBar: AppBar(title: const Text('Products'), backgroundColor: AppColors.primaryDark),
       body: Consumer<ProductProvider>(
         builder: (context, provider, child) {
           // Loading state
@@ -366,11 +375,10 @@ class _ProductPageState extends State<ProductPage> {
 
           // Empty state
           if (provider.products.isEmpty) {
-            return const Center(child: Text('No products found',style: TextStyle(color: AppColors.whitecolor),));
+            return const Center(child: Text('No products found', style: TextStyle(color: AppColors.whitecolor)));
           }
 
           // Products list
-            // Products list
           return ListView.builder(
             itemCount: provider.products.length,
             itemBuilder: (context, index) {
@@ -386,7 +394,7 @@ class _ProductPageState extends State<ProductPage> {
       floatingActionButton: FloatingActionButton(
         backgroundColor: AppColors.primaryDark,
         onPressed: _showAddProductDialog,
-        child: const Icon(Icons.add_circle_outline,color: AppColors.whitecolor,size: 40,),
+        child: const Icon(Icons.add_circle_outline, color: AppColors.whitecolor, size: 40),
       ),
     );
   }

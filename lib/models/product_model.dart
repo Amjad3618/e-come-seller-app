@@ -1,56 +1,73 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ProductsModel {
-  String name;
-  String description;
-  List<String> images; // Change `image` to `images` (List of image URLs)
-  int oldprice;
-  int newprice;
-  String category;
-  String id;
-  int maxQuantity;
-  
+  final String id;
+  final String name;
+  final String description;
+  final List<String> images;
+  final int oldPrice;
+  final int newPrice;
+  final String category;
+  final String categoryId;   // Added category ID field
+  final int quantity;
+  final String sellerId;
+  final DateTime createdAt;
+  final DateTime? updatedAt;
 
   ProductsModel({
+    required this.id,
     required this.name,
     required this.description,
     required this.images,
-    required this.oldprice,
-    required this.newprice,
+    required this.oldPrice,
+    required this.newPrice,
     required this.category,
-    required this.id,
-    required this.maxQuantity,
+    required this.categoryId, // Added category ID field
+    required this.quantity,
+    required this.sellerId,
+    required this.createdAt,
+    this.updatedAt,
   });
 
-  // Convert JSON to object model
-  factory ProductsModel.fromJson(Map<String, dynamic> json, String id) {
+  // Factory constructor to create a ProductsModel from Firestore document
+  factory ProductsModel.fromJson(DocumentSnapshot doc) {
+    final data = doc.data() as Map<String, dynamic>;
+    
     return ProductsModel(
-      name: json["name"] ?? "",
-      description: json["desc"] ?? "No description",
-      images: (json["images"] as List<dynamic>?)?.map((e) => e.toString()).toList() ?? [],
-      newprice: json["new_price"] ?? 0,
-      oldprice: json["old_price"] ?? 0,
-      category: json["category"] ?? "",
-      maxQuantity: json["quantity"] ?? 0,
-      id: id,
+      id: doc.id,
+      name: data['name'] ?? '',
+      description: data['desc'] ?? '',
+      images: List<String>.from(data['images'] ?? []),
+      oldPrice: data['old_price'] ?? 0,
+      newPrice: data['new_price'] ?? 0,
+      category: data['category'] ?? '',
+      categoryId: data['category_id'] ?? '', // Extract category ID
+      quantity: data['quantity'] ?? 0,
+      sellerId: data['seller_id'] ?? '',
+      createdAt: (data['created_at'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      updatedAt: (data['updated_at'] as Timestamp?)?.toDate(),
     );
   }
 
-  // Convert List<QueryDocumentSnapshot> to List<ProductModel>
-  static List<ProductsModel> fromJsonList(List<QueryDocumentSnapshot> list) {
-    return list.map((e) => ProductsModel.fromJson(e.data() as Map<String, dynamic>, e.id)).toList();
+  // Convert list of Firestore documents to list of ProductsModel
+  static List<ProductsModel> fromJsonList(List<DocumentSnapshot> docs) {
+    return docs.map((doc) => ProductsModel.fromJson(doc)).toList();
   }
 
-  // Convert object to JSON for Firestore
+  // Convert ProductsModel to JSON
   Map<String, dynamic> toJson() {
     return {
-      "name": name,
-      "desc": description,
-      "images": images, // Store multiple images as a list
-      "new_price": newprice,
-      "old_price": oldprice,
-      "category": category,
-      "quantity": maxQuantity,
+      'name': name,
+      'desc': description,
+      'images': images,
+      'old_price': oldPrice,
+      'new_price': newPrice,
+      'category': category,
+      'category_id': categoryId, // Include category ID in JSON
+      'quantity': quantity,
+      'seller_id': sellerId,
+      'created_at': Timestamp.fromDate(createdAt),
+      'updated_at': updatedAt != null ? Timestamp.fromDate(updatedAt!) : null,
     };
   }
 }

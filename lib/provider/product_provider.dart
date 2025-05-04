@@ -2,7 +2,7 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:firebase_auth/firebase_auth.dart'; // Added for Auth
+import 'package:firebase_auth/firebase_auth.dart';
 
 import '../Services/db_services.dart';
 import '../models/product_model.dart';
@@ -10,17 +10,19 @@ import '../models/product_model.dart';
 class ProductProvider with ChangeNotifier {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseStorage _storage = FirebaseStorage.instance;
-  final FirebaseAuth _auth = FirebaseAuth.instance; // Added for Auth
+  final FirebaseAuth _auth = FirebaseAuth.instance;
   final DbService _dbService = DbService();
 
   List<ProductsModel> _products = [];
   List<String> _categories = [];
+  List<Map<String, String>> _categoryMap = []; // Added to store category ID and name pairs
   bool _isLoading = false;
   String? _error;
 
   // Getters
   List<ProductsModel> get products => _products;
   List<String> get categories => _categories;
+  List<Map<String, String>> get categoryMap => _categoryMap; // Getter for category map
   bool get isLoading => _isLoading;
   String? get error => _error;
 
@@ -44,7 +46,7 @@ class ProductProvider with ChangeNotifier {
     }
   }
 
-  // Fetch Categories
+  // Fetch Categories with IDs
   Future<void> fetchCategories() async {
     _isLoading = true;
     _error = null;
@@ -54,8 +56,15 @@ class ProductProvider with ChangeNotifier {
       final querySnapshot =
           await _firestore.collection("shop_categories").get();
 
+      // Store categories names for backward compatibility
       _categories =
           querySnapshot.docs.map((doc) => doc['name'] as String).toList();
+      
+      // Store category ID and name pairs for improved functionality
+      _categoryMap = querySnapshot.docs.map((doc) => {
+        'id': doc.id,
+        'name': doc['name'] as String,
+      }).toList();
 
       _isLoading = false;
       notifyListeners();
@@ -66,14 +75,32 @@ class ProductProvider with ChangeNotifier {
     }
   }
 
-  // Upload Product with Multiple Images and User UID
+  // Fetch products by category ID
+  Future<List<ProductsModel>> fetchProductsByCategory(String categoryId) async {
+    try {
+      final querySnapshot = await _firestore
+          .collection("shop_products")
+          .where("category_id", isEqualTo: categoryId)
+          .orderBy("name")
+          .get();
+
+      return ProductsModel.fromJsonList(querySnapshot.docs);
+    } catch (e) {
+      _error = e.toString();
+      notifyListeners();
+      return [];
+    }
+  }
+
+  // Upload Product with Multiple Images, User UID and Category ID
   Future<bool> uploadProduct({
     required String name,
     required String description,
     required List<File> images,
     required int oldPrice,
     required int newPrice,
-    required String category,
+    required String categoryId,
+    required String categoryName,
     required int maxQuantity,
   }) async {
     _isLoading = true;
@@ -100,16 +127,17 @@ class ProductProvider with ChangeNotifier {
         imageUrls.add(imageUrl);
       }
 
-      // Prepare product data with user ID
+      // Prepare product data with user ID and category ID
       final productData = {
         "name": name,
         "desc": description,
         "images": imageUrls,
         "new_price": newPrice,
         "old_price": oldPrice,
-        "category": category,
+        "category": categoryName,       // Keep category name for backward compatibility
+        "category_id": categoryId,      // Add category ID for filtering
         "quantity": maxQuantity,
-        "product_id": uid, // Add user ID to product data
+        "seller_id": uid,               // Add user ID to product data
         "created_at": FieldValue.serverTimestamp(),
       };
 
@@ -130,7 +158,7 @@ class ProductProvider with ChangeNotifier {
     }
   }
 
-  // Update Product with UID
+  // Update Product with Category ID
   Future<bool> updateProduct({
     required String productId,
     required String name,
@@ -139,7 +167,8 @@ class ProductProvider with ChangeNotifier {
     required List<dynamic> existingImages,
     required int oldPrice,
     required int newPrice,
-    required String category,
+    required String categoryId,
+    required String categoryName,
     required int maxQuantity,
   }) async {
     _isLoading = true;
@@ -179,16 +208,17 @@ class ProductProvider with ChangeNotifier {
         allImageUrls = allImageUrls.take(5).toList();
       }
 
-      // Prepare updated product data with user ID
+      // Prepare updated product data with user ID and category ID
       final updatedProductData = {
         "name": name,
         "desc": description,
         "images": allImageUrls,
         "new_price": newPrice,
         "old_price": oldPrice,
-        "category": category,
+        "category": categoryName,       // Keep category name for backward compatibility
+        "category_id": categoryId,      // Add category ID for filtering
         "quantity": maxQuantity,
-        "user_id": uid, // Add user ID to product data
+        "seller_id": uid,
         "updated_at": FieldValue.serverTimestamp(),
       };
 
@@ -246,8 +276,8 @@ class ProductProvider with ChangeNotifier {
     }
   }
 
-  // Fetch user's products only
-  Future<void> fetchUserProducts() async {
+  // Fetch seller's products only
+  Future<void> fetchSellerProducts() async {
     _isLoading = true;
     _error = null;
     notifyListeners();
@@ -261,7 +291,7 @@ class ProductProvider with ChangeNotifier {
 
       final querySnapshot = await _firestore
           .collection("shop_products")
-          .where("user_id", isEqualTo: uid)
+          .where("seller_id", isEqualTo: uid)
           .orderBy("name")
           .get();
 
