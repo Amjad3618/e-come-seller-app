@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../Services/auth_services.dart';
 import '../utils/color.dart';
 
 class HomePage extends StatefulWidget {
@@ -21,7 +22,10 @@ class _HomePageState extends State<HomePage> {
         foregroundColor: Colors.white,
         elevation: 0,
         actions: [
-          IconButton(icon: const Icon(Icons.notifications), onPressed: () {}),
+          IconButton(icon: const Icon(Icons.logout), onPressed: () {
+            AuthController().logoutUser();
+            
+          }),
           IconButton(
             icon: const Icon(Icons.admin_panel_settings),
             onPressed: () {},
